@@ -8,6 +8,7 @@ VS Code extension using `reactive-vscode` to display real-time AI provider usage
 npm install          # Install dependencies
 npm run build        # Build extension
 npm run typecheck    # Type check
+npm run test         # Run tests in Docker
 F5                   # Start debugging
 ```
 
@@ -15,14 +16,17 @@ F5                   # Start debugging
 
 | ID | Title | Description |
 |---|---|---|
-| `unifyQuotaMonitor.refresh` | Refresh | Refresh all quota data |
-| `unifyQuotaMonitor.settings` | Settings | Open account menu |
+| `unifyQuotaMonitor.refresh` | Refresh all quota data |
+| `unifyQuotaMonitor.settings` | Open account menu |
 
 ## Documentation
 
-- [Architecture](./docs/architecture.md) - MVC layers, data flow, constraints
-- [Composables](./docs/composables.md) - useConfig, useProviders, useView, useMenu
-- [Providers](./docs/providers.md) - Provider composables and implementations
-- [Authentication](./docs/authentication.md) - OAuth flows, API keys, token refresh
-- [UI/UX](./docs/ui-ux.md) - Design guidelines, styling patterns
+| Topic | File |
+|---|---|
+| Architecture | [docs/architecture.md](./docs/architecture.md) |
+| Composables | [docs/composables.md](./docs/composables.md) |
+| Providers | [docs/providers.md](./docs/providers.md) |
+| Authentication | [docs/authentication.md](./docs/authentication.md) |
+| UI/UX | [docs/ui-ux.md](./docs/ui-ux.md) |
+| Testing | [docs/docker-testing.md](./docs/docker-testing.md) |
 

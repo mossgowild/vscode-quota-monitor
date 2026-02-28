@@ -54,12 +54,12 @@ export const useProviders = defineService((): UseProvidersReturn => {
       },
       async () => {
         if (providerId === undefined) {
-          // 刷新所有 provider 的所有账号
+          // Refresh all accounts for all providers
           await Promise.allSettled(
             Object.values(providersMap).map((p) => p.refresh())
           )
         } else {
-          // 刷新指定 provider，可选指定账号
+          // Refresh specific provider, optionally specific account
           await providersMap[providerId].refresh(accountIndex)
         }
       }

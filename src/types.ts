@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-export type ProviderId =
-  | 'zhipu'
-  | 'zai'
-  | 'antigravity'
-  | 'copilot'
-  | 'gemini'
-  | 'kimi'
+export const PROVIDER_IDS = [
+  'zhipu',
+  'zai',
+  'antigravity',
+  'copilot',
+  'gemini',
+  'kimi'
+] as const
+
+export type ProviderId = (typeof PROVIDER_IDS)[number]
 
 export interface ConfigAccount {
   credential: string
@@ -15,7 +18,7 @@ export interface ConfigAccount {
 
 export type ConfigProvider = Record<ProviderId, ConfigAccount[]>
 
-// 扁平化配置类型（reactive-vscode defineConfig 需要）
+// Flattened config type (required by reactive-vscode defineConfig)
 export interface Config {
   providers: ConfigProvider
   autoRefreshEnabled: boolean

@@ -132,18 +132,26 @@
     }
   },
   "scripts": {
-    "build": "vite build",
     "dev": "vite build --watch",
-    "typecheck": "tsc --noEmit",
+    "build": "vite build",
+    "build:test": "vite build --config vite.config.test.ts",
+    "test": "npm run build:test && docker compose run --rm test",
+    "test:build": "npm run build:test && docker compose run --build --rm test",
     "vscode:prepublish": "npm run build"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/sinon": "^21.0.0",
     "@types/vscode": "^1.99.0",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "eslint": "^8.56.0",
+    "mocha": "^11.7.5",
     "reactive-vscode": "^1.0.0-beta.2",
+    "sinon": "^21.0.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"
   }

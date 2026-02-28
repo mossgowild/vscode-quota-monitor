@@ -18,7 +18,7 @@ export const useAntigravityProvider = defineService(() =>
       'https://www.googleapis.com/auth/experimentsandconfigs',
     ],
     fetchUsage: async (credential): Promise<UsageItem[]> => {
-      // credential 是 refresh_token，需要用它获取 access_token 来调用 API
+      // credential is refresh_token, use it to get access_token for API calls
       const tokensResponse = await fetch('https://oauth2.googleapis.com/token', {
         method: 'POST',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },

@@ -27,8 +27,8 @@ export function useGoogleProvider(options: GoogleProviderOptions) {
   }
 
   const exchangeCode = async (code: string): Promise<string> => {
-    // 如果只需要存储 code 或 refresh_token，直接返回 code
-    // 实际的 token 交换逻辑在具体 provider 中实现
+    // If only storing code or refresh_token, return code directly
+    // Actual token exchange logic is implemented in specific providers
     const response = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },

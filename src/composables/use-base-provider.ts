@@ -1,4 +1,5 @@
 import { computed, DeepReadonly, ref, type ComputedRef } from 'reactive-vscode'
+import { ConfigurationTarget } from 'vscode'
 import { useConfig } from './use-config'
 import type {
   ProviderId,
@@ -28,15 +29,28 @@ export function useBaseProvider(
   options: BaseProviderOptions
 ): UseBaseProviderReturn {
   const config = useConfig()
-  const key = `providers.${options.id}`
   const accountsConfig = computed({
     get() {
       return (
-        config.has(key) ? config.providers[options.id] : []
+        config.has(`providers.${options.id}`)
+          ? config.providers[options.id]
+          : []
       ) as DeepReadonly<ConfigAccount[]>
     },
     set(value: ConfigAccount[]) {
-      config.update(key, value.length > 0 ? value : undefined)
+      const current =
+        (config.get('providers') as Record<string, unknown>) ?? {}
+      const updated = { ...current }
+      if (value.length > 0) {
+        updated[options.id] = [...value]
+      } else {
+        delete updated[options.id]
+      }
+      config.update(
+        'providers',
+        Object.keys(updated).length > 0 ? updated : undefined,
+        ConfigurationTarget.Global
+      )
     }
   })
   const accountsData = ref<{ usage?: UsageItem[]; error?: string }[]>([])

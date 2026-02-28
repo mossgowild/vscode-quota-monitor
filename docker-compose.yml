@@ -1,0 +1,31 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: vscode-unify-quota-monitor-test
+    environment:
+      - DISPLAY=:99
+      - NODE_ENV=test
+      - CI=true
+      - VSCODE_CLI=1
+      - ELECTRON_ENABLE_LOGGING=false
+    volumes:
+      # Cache VS Code download
+      - vscode-test-cache:/workspace/.vscode-test
+      # Mount project files
+      - ./dist:/workspace/dist:ro
+      - ./node_modules:/workspace/node_modules:ro
+      - ./package.json:/workspace/package.json:ro
+      - ./.vscode-test.mjs:/workspace/.vscode-test.mjs:ro
+    working_dir: /workspace
+    command: >
+      sh -c "
+        Xvfb :99 -screen 0 1280x720x24 &>/dev/null &
+        sleep 1
+        DISPLAY=:99 npx vscode-test 2>/dev/null | grep -v -E '^[[]main |^workbench#|^NativeExtensionHostFactory|^Started local extension host|^MCP Registry|^Loading development extension|^Asking native host service|^Settings Sync:|^IExtensionHostStarter|Extension host with pid'
+      "
+
+volumes:
+  vscode-test-cache:
+    driver: local
