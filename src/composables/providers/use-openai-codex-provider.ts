@@ -15,7 +15,7 @@ const usageEndpoints = [
   'https://chatgpt.com/api/codex/usage'
 ] as const
 
-export const useCodexProvider = defineService(() =>
+export const useOpenaiCodexProvider = defineService(() =>
   useOAuthProvider({
     id: 'openaiCodex',
     name: 'OpenAI Codex',

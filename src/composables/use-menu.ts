@@ -12,7 +12,7 @@ import { useProviders } from './use-providers'
 import { showInputBoxWithBack } from '../utils/show-input-box-with-back'
 
 export const useMenu = defineService(() => {
-  const { providersMap } = useProviders()
+  const { providerById } = useProviders()
 
   async function showAddAccount(): Promise<void> {
     type ProviderPickItem = {
@@ -25,8 +25,8 @@ export const useMenu = defineService(() => {
     qp.title = 'Select Provider'
     qp.placeholder = 'Choose a provider to add'
     qp.buttons = [QuickInputButtons.Back]
-    qp.items = (Object.keys(providersMap) as ProviderId[]).map((id) => {
-      const { meta } = providersMap[id]
+    qp.items = (Object.keys(providerById) as ProviderId[]).map((id) => {
+      const { meta } = providerById[id]
       const helpUrl = meta.login.helpUrl
       return {
         label: meta.name,
@@ -61,7 +61,7 @@ export const useMenu = defineService(() => {
           resolve()
           return
         }
-        const provider = providersMap[selected.providerId]
+        const provider = providerById[selected.providerId]
         try {
           if (provider.meta.login.type === 'apiKey') {
             const prefix = provider.meta.login.apiKeyPrefix ?? 'sk'
@@ -103,10 +103,10 @@ export const useMenu = defineService(() => {
       accountIndex?: number
     }[] = []
 
-    for (const providerId of Object.keys(providersMap) as ProviderId[]) {
-      const accounts = providersMap[providerId].accounts.value
+    for (const providerId of Object.keys(providerById) as ProviderId[]) {
+      const accounts = providerById[providerId].accounts.value
       if (accounts.length === 0) continue
-      const providerName = providersMap[providerId].meta.name
+      const providerName = providerById[providerId].meta.name
       items.push({ label: providerName, kind: QuickPickItemKind.Separator })
       for (let i = 0; i < accounts.length; i++) {
         const acc = accounts[i]
@@ -146,8 +146,8 @@ export const useMenu = defineService(() => {
     providerId: ProviderId,
     accountIndex: number
   ): Promise<void> {
-    const providerName = providersMap[providerId].meta.name
-    const accounts = providersMap[providerId].accounts.value
+    const providerName = providerById[providerId].meta.name
+    const accounts = providerById[providerId].accounts.value
     const account = accounts[accountIndex]
     if (!account) return
 
@@ -187,7 +187,7 @@ export const useMenu = defineService(() => {
             placeholder: account.fallbackName,
             onBack: () => showAccountActions(providerId, accountIndex),
             onAccept: (name) => {
-              providersMap[providerId].rename(
+              providerById[providerId].rename(
                 accountIndex,
                 name.trim() ? name : account.fallbackName
               )
@@ -201,7 +201,7 @@ export const useMenu = defineService(() => {
             'Cancel'
           )
           if (confirmed === 'Confirm') {
-            providersMap[providerId].logout(accountIndex)
+            providerById[providerId].logout(accountIndex)
             window.showInformationMessage(
               `Logged out from ${providerName} - ${displayName}`
             )

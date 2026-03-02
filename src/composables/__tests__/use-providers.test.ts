@@ -74,37 +74,37 @@ describe('use-providers', () => {
 
   it(`should have ${PROVIDER_IDS.length} providers`, () => {
     PROVIDER_IDS.forEach((id) => {
-      assert.ok(providers.providersMap[id], `${id} provider should exist`)
+      assert.ok(providers.providerById[id], `${id} provider should exist`)
     })
   })
 
   describe('login', () => {
     it('should add account when API key login succeeds', async () => {
-      await providers.providersMap.zhipu.login('sk.test-api-key')
+      await providers.providerById.zhipu.login('sk.test-api-key')
       await waitUntil(
-        () => providers.providersMap.zhipu.accounts.value.length > 0
+        () => providers.providerById.zhipu.accounts.value.length > 0
       )
     })
 
     it('should have 1 account after login', () => {
-      assert.equal(providers.providersMap.zhipu.accounts.value.length, 1)
+      assert.equal(providers.providerById.zhipu.accounts.value.length, 1)
     })
 
     it('should have default name format', () => {
-      const account = providers.providersMap.zhipu.accounts.value[0]
+      const account = providers.providerById.zhipu.accounts.value[0]
       assert.equal(account.name, undefined)
       assert.equal(account.fallbackName, 'Zhipu AI #1')
     })
 
     it('should have no usage before refresh', () => {
       assert.equal(
-        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        providers.providerById.zhipu.accounts.value[0].usage.length,
         0
       )
     })
 
     it('should reject when user cancels API key input', async () => {
-      await assert.rejects(() => providers.providersMap.zhipu.login(), {
+      await assert.rejects(() => providers.providerById.zhipu.login(), {
         message: 'Authentication cancelled'
       })
     })
@@ -112,27 +112,27 @@ describe('use-providers', () => {
 
   describe('rename', () => {
     it('should update account name at given index', async () => {
-      providers.providersMap.zhipu.rename(0, 'My Zhipu')
+      providers.providerById.zhipu.rename(0, 'My Zhipu')
       await waitUntil(
         () =>
-          providers.providersMap.zhipu.accounts.value[0]?.name === 'My Zhipu'
+          providers.providerById.zhipu.accounts.value[0]?.name === 'My Zhipu'
       )
     })
 
     it('should preserve account count after rename', () => {
-      assert.equal(providers.providersMap.zhipu.accounts.value.length, 1)
+      assert.equal(providers.providerById.zhipu.accounts.value.length, 1)
     })
 
     it('should persist new name', () => {
       assert.equal(
-        providers.providersMap.zhipu.accounts.value[0].name,
+        providers.providerById.zhipu.accounts.value[0].name,
         'My Zhipu'
       )
     })
 
     it('should have no usage before refresh', () => {
       assert.equal(
-        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        providers.providerById.zhipu.accounts.value[0].usage.length,
         0
       )
     })
@@ -142,10 +142,10 @@ describe('use-providers', () => {
     it('should populate usage data on first refresh', async () => {
       fetchStub = sinon.stub(globalThis, 'fetch').callsFake(mockFetch())
 
-      await providers.providersMap.zhipu.refresh(0)
+      await providers.providerById.zhipu.refresh(0)
 
       assert.equal(
-        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        providers.providerById.zhipu.accounts.value[0].usage.length,
         2
       )
 
@@ -154,7 +154,7 @@ describe('use-providers', () => {
 
     it('should have correct Token Limit values', () => {
       const tokenLimit =
-        providers.providersMap.zhipu.accounts.value[0].usage.find(
+        providers.providerById.zhipu.accounts.value[0].usage.find(
           (u) => u.name === 'Token Limit'
         )
       assert.ok(tokenLimit, 'Token Limit should exist')
@@ -166,7 +166,7 @@ describe('use-providers', () => {
 
     it('should have correct Time Limit values', () => {
       const timeLimit =
-        providers.providersMap.zhipu.accounts.value[0].usage.find(
+        providers.providerById.zhipu.accounts.value[0].usage.find(
           (u) => u.name === 'Time Limit'
         )
       assert.ok(timeLimit, 'Time Limit should exist')
@@ -177,7 +177,7 @@ describe('use-providers', () => {
     })
 
     it('should call refresh on all providers when refresh() is called without providerId', async () => {
-      const refreshStubs = Object.values(providers.providersMap).map(
+      const refreshStubs = Object.values(providers.providerById).map(
         (provider) => sinon.stub(provider, 'refresh').resolves()
       )
 
@@ -191,37 +191,37 @@ describe('use-providers', () => {
 
     it('should call refresh on specific provider when providerId is provided', async () => {
       const refreshStubs: Record<ProviderId, sinon.SinonStub> = {
-        zhipu: sinon.stub(providers.providersMap.zhipu, 'refresh').resolves(),
-        zai: sinon.stub(providers.providersMap.zai, 'refresh').resolves(),
+        zhipu: sinon.stub(providers.providerById.zhipu, 'refresh').resolves(),
+        zai: sinon.stub(providers.providerById.zai, 'refresh').resolves(),
         kimiCode: sinon
-          .stub(providers.providersMap.kimiCode, 'refresh')
+          .stub(providers.providerById.kimiCode, 'refresh')
           .resolves(),
         googleAntigravity: sinon
-          .stub(providers.providersMap.googleAntigravity, 'refresh')
+          .stub(providers.providerById.googleAntigravity, 'refresh')
           .resolves(),
         googleGemini: sinon
-          .stub(providers.providersMap.googleGemini, 'refresh')
+          .stub(providers.providerById.googleGemini, 'refresh')
           .resolves(),
         githubCopilot: sinon
-          .stub(providers.providersMap.githubCopilot, 'refresh')
+          .stub(providers.providerById.githubCopilot, 'refresh')
           .resolves(),
         deepSeek: sinon
-          .stub(providers.providersMap.deepSeek, 'refresh')
+          .stub(providers.providerById.deepSeek, 'refresh')
           .resolves(),
         moonshot: sinon
-          .stub(providers.providersMap.moonshot, 'refresh')
+          .stub(providers.providerById.moonshot, 'refresh')
           .resolves(),
         siliconFlow: sinon
-          .stub(providers.providersMap.siliconFlow, 'refresh')
+          .stub(providers.providerById.siliconFlow, 'refresh')
           .resolves(),
         openRouter: sinon
-          .stub(providers.providersMap.openRouter, 'refresh')
+          .stub(providers.providerById.openRouter, 'refresh')
           .resolves(),
         claudeCode: sinon
-          .stub(providers.providersMap.claudeCode, 'refresh')
+          .stub(providers.providerById.claudeCode, 'refresh')
           .resolves(),
         openaiCodex: sinon
-          .stub(providers.providersMap.openaiCodex, 'refresh')
+          .stub(providers.providerById.openaiCodex, 'refresh')
           .resolves()
       }
 
@@ -241,7 +241,7 @@ describe('use-providers', () => {
 
     it('should call refresh with accountIndex when both providerId and accountIndex are provided', async () => {
       const zhipuRefreshStub = sinon
-        .stub(providers.providersMap.zhipu, 'refresh')
+        .stub(providers.providerById.zhipu, 'refresh')
         .resolves()
 
       await providers.refresh('zhipu', 0)
@@ -255,7 +255,7 @@ describe('use-providers', () => {
     })
 
     it('should retain usage data after refresh routing tests', () => {
-      const account = providers.providersMap.zhipu.accounts.value[0]
+      const account = providers.providerById.zhipu.accounts.value[0]
       assert.equal(account.usage.length, 2)
     })
 
@@ -276,10 +276,10 @@ describe('use-providers', () => {
         })
       )
 
-      await providers.providersMap.zhipu.refresh(0)
+      await providers.providerById.zhipu.refresh(0)
 
       assert.equal(
-        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        providers.providerById.zhipu.accounts.value[0].usage.length,
         1
       )
 
@@ -288,7 +288,7 @@ describe('use-providers', () => {
 
     it('should have updated Token Limit values', () => {
       const tokenLimit =
-        providers.providersMap.zhipu.accounts.value[0].usage.find(
+        providers.providerById.zhipu.accounts.value[0].usage.find(
           (u) => u.name === 'Token Limit'
         )
       assert.ok(tokenLimit, 'Token Limit should exist')
@@ -307,9 +307,9 @@ describe('use-providers', () => {
         )
       )
 
-      await providers.providersMap.zhipu.refresh(0)
+      await providers.providerById.zhipu.refresh(0)
 
-      const account = providers.providersMap.zhipu.accounts.value[0]
+      const account = providers.providerById.zhipu.accounts.value[0]
       assert.ok(account.error, 'should have error after failed refresh')
 
       fetchStub.restore()
@@ -318,18 +318,18 @@ describe('use-providers', () => {
 
   describe('logout', () => {
     it('should remove account at given index', async () => {
-      providers.providersMap.zhipu.logout(0)
+      providers.providerById.zhipu.logout(0)
       await waitUntil(
-        () => providers.providersMap.zhipu.accounts.value.length === 0
+        () => providers.providerById.zhipu.accounts.value.length === 0
       )
 
-      assert.equal(providers.providersMap.zhipu.accounts.value.length, 0)
+      assert.equal(providers.providerById.zhipu.accounts.value.length, 0)
     })
 
     it('should have no accounts for any provider', () => {
       for (const id of PROVIDER_IDS) {
         assert.equal(
-          providers.providersMap[id].accounts.value.length,
+          providers.providerById[id].accounts.value.length,
           0,
           `${id} should have 0 accounts`
         )

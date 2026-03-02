@@ -6,19 +6,18 @@ import { isAmountUsage, isBalanceUsage, isPercentageUsage } from '../common'
 import iconSvg from '../../images/icon.svg?raw'
 
 export function useView() {
-  const { providersMap } = useProviders()
+  const { providerById } = useProviders()
 
   const providers = computed(() =>
-    (Object.keys(providersMap) as ProviderId[]).map((id) => ({
+    (Object.keys(providerById) as ProviderId[]).map((id) => ({
       id,
-      name: providersMap[id].meta.name,
-      accounts: providersMap[id].accounts.value
+      name: providerById[id].meta.name,
+      accounts: providerById[id].accounts.value
     }))
   )
 
   const html = computed(() => {
-    const providerList = [...providers.value]
-    const hasAccounts = providerList.some((p) => p.accounts?.length > 0)
+    const hasAccounts = providers.value.some((p) => p.accounts?.length > 0)
     const htmlLocale = env.language || 'en'
 
     return `<!DOCTYPE html>
@@ -174,7 +173,7 @@ export function useView() {
     <body>
         <div class="container">
             <div class="content">
-                ${!hasAccounts ? renderEmptyState() : renderProviders(providerList, htmlLocale)}
+                ${!hasAccounts ? renderEmptyState() : renderProviders(providers.value, htmlLocale)}
             </div>
         </div>
         <script>

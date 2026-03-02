@@ -3,7 +3,7 @@ import { defineService } from 'reactive-vscode'
 import { useBaseProvider } from '../use-base-provider'
 import type { UsageItem } from '../../types'
 
-export const useCopilotProvider = defineService(() =>
+export const useGithubCopilotProvider = defineService(() =>
   useBaseProvider({
     id: 'githubCopilot',
     name: 'GitHub Copilot',

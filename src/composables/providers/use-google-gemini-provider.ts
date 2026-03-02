@@ -10,7 +10,7 @@ interface GeminiCredential {
   tokenType?: string
 }
 
-export const useGeminiProvider = defineService(() =>
+export const useGoogleGeminiProvider = defineService(() =>
   useGoogleProvider({
     id: 'googleGemini',
     name: 'Google Gemini',

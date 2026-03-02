@@ -3,7 +3,7 @@ import { defineService } from 'reactive-vscode'
 import { useGoogleProvider } from '../use-google-provider'
 import type { UsageItem } from '../../types'
 
-export const useAntigravityProvider = defineService(() =>
+export const useGoogleAntigravityProvider = defineService(() =>
   useGoogleProvider({
     id: 'googleAntigravity',
     name: 'Google Antigravity',
