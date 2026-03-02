@@ -58,32 +58,21 @@ export function useBigModelProvider(options: BigModelProviderOptions) {
 
         const resetDate = rawResetTime ? new Date(rawResetTime) : undefined
 
-        let used: number
-        let total: number
-        let type: 'percentage' | 'quantity'
-
         if (limit.type === 'TOKENS_LIMIT') {
-          type = 'percentage'
-          used = Number(limit.percentage) || 0
-          total = 100
-        } else {
-          type = 'quantity'
-          used = Number(limit.currentValue) || 0
-          total = Number(limit.usage) || 0
+          usage.push({
+            name: 'Token Limit',
+            used: Number(limit.currentValue) || 0,
+            total: Number(limit.usage) || 0,
+            resetTime: resetDate?.toISOString()
+          })
+        } else if (limit.type === 'TIME_LIMIT') {
+          usage.push({
+            name: 'Time Limit',
+            used: Number(limit.currentValue) || 0,
+            total: Number(limit.usage) || 0,
+            resetTime: resetDate?.toISOString()
+          })
         }
-
-        usage.push({
-          name:
-            limit.type === 'TOKENS_LIMIT'
-              ? 'Token Limit'
-              : limit.type === 'TIME_LIMIT'
-                ? 'Time Limit'
-                : 'MCP Quota',
-          type,
-          used,
-          total,
-          resetTime: resetDate?.toISOString()
-        })
       }
 
       return usage

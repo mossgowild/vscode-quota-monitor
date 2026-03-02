@@ -1,7 +1,28 @@
 import { computed, useWebviewView } from 'reactive-vscode'
 import { env } from 'vscode'
-import type { ProviderId } from '../types'
+import type {
+  ProviderId,
+  UsageItem,
+  PercentageUsage,
+  AmountUsage,
+  BalanceUsage,
+  ViewAccount
+} from '../types'
 import { useProviders } from './use-providers'
+
+type ProviderItem = { id: ProviderId; name: string; accounts: ViewAccount[] }
+
+function isPercentageUsage(u: UsageItem): u is PercentageUsage {
+  return 'percentage' in u
+}
+
+function isAmountUsage(u: UsageItem): u is AmountUsage {
+  return 'used' in u
+}
+
+function isBalanceUsage(u: UsageItem): u is BalanceUsage {
+  return 'amount' in u
+}
 
 export function useView() {
   const { providersMap } = useProviders()
@@ -223,66 +244,72 @@ export function useView() {
     return `<div class="empty-state"><div class="empty-state-icon">${svg}</div><div class="empty-state-title">No Active Accounts</div><div class="empty-state-description">Add an account to monitor your quota usage</div></div>`
   }
 
-  function renderProviders(list: any[], locale: string): string {
+  function renderProviders(list: ProviderItem[], locale: string): string {
     return list
-      .filter((p) => p.accounts?.length > 0)
+      .filter((p) => p.accounts.length > 0)
       .map((p) => renderProvider(p, locale))
       .join('')
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function renderProvider(provider: any, _locale: string): string {
-    const accounts = provider.accounts || []
-    const hasMultiple = accounts.length > 1
-    return `<div class="provider-section"><div class="provider-header"><span>${provider.name}</span></div>${accounts.map((acc: any) => renderAccount(acc, hasMultiple)).join('')}</div>`
+  function renderProvider(provider: ProviderItem, _locale: string): string {
+    const hasMultiple = provider.accounts.length > 1
+    return `<div class="provider-section"><div class="provider-header"><span>${provider.name}</span></div>${provider.accounts.map((acc) => renderAccount(acc, hasMultiple)).join('')}</div>`
   }
 
-  function renderAccount(account: any, showLabel: boolean): string {
+  function renderAccount(account: ViewAccount, showLabel: boolean): string {
     const errorHtml = account.error
       ? `<div class="account-error">${account.error}</div>`
       : ''
-    const usageHtml = account.usage.map((u: any) => renderUsageItem(u)).join('')
+    const usageHtml = account.usage.map((u) => renderUsageItem(u)).join('')
     if (!showLabel)
       return `<div class="account-block">${errorHtml}<div class="usage-grid">${usageHtml}</div></div>`
     return `<div class="account-block"><div class="account-label">${account.name}</div>${errorHtml}<div class="usage-grid">${usageHtml}</div></div>`
   }
 
-  function renderUsageItem(usage: any): string {
-    const usedPercent =
-      usage.total > 0
-        ? Math.min(100, Math.round((usage.used / usage.total) * 100))
-        : 0
+  function renderResetHtml(resetTime: string): string {
+    const date = new Date(resetTime)
+    const diffMs = date.getTime() - Date.now()
+    if (diffMs <= 0) return `<div class="usage-reset">Resetting...</div>`
+    const totalHours = Math.floor(diffMs / 3600000)
+    const days = Math.floor(totalHours / 24)
+    const hours = totalHours % 24
+    const mins = Math.floor((diffMs % 3600000) / 60000)
+    const secs = Math.floor((diffMs % 60000) / 1000)
+    const timeStr =
+      days > 0
+        ? `${days}d ${hours}h`
+        : totalHours > 0
+          ? `${totalHours}h ${mins}m`
+          : `${mins}m ${secs}s`
+    return `<div class="usage-reset" data-reset-time="${resetTime}">Reset ${timeStr}</div>`
+  }
+
+  function progressBar(percent: number): string {
+    const clamped = Math.min(100, percent)
     const statusClass =
-      usedPercent >= 90 ? 'danger' : usedPercent >= 75 ? 'warning' : ''
-    const displayValue =
-      usage.type === 'percentage'
-        ? `${usedPercent}%`
-        : usage.total
-          ? `${usage.used} / ${usage.total}`
-          : String(usage.used)
-    let resetHtml = ''
-    if (usage.resetTime) {
-      const date = new Date(usage.resetTime)
-      const now = new Date()
-      const diffMs = date.getTime() - now.getTime()
-      if (diffMs > 0) {
-        const totalHours = Math.floor(diffMs / 3600000)
-        const days = Math.floor(totalHours / 24)
-        const hours = totalHours % 24
-        const mins = Math.floor((diffMs % 3600000) / 60000)
-        const secs = Math.floor((diffMs % 60000) / 1000)
-        const timeStr =
-          days > 0
-            ? `${days}d ${hours}h`
-            : totalHours > 0
-              ? `${totalHours}h ${mins}m`
-              : `${mins}m ${secs}s`
-        resetHtml = `<div class="usage-reset" data-reset-time="${usage.resetTime}">Reset ${timeStr}</div>`
-      } else {
-        resetHtml = `<div class="usage-reset">Resetting...</div>`
-      }
+      clamped >= 90 ? 'danger' : clamped >= 75 ? 'warning' : ''
+    return `<div class="progress-bar-container"><div class="progress-bar ${statusClass}" style="width: ${clamped}%"></div></div>`
+  }
+
+  function renderUsageItem(usage: UsageItem): string {
+    if (isBalanceUsage(usage)) {
+      const unit = usage.unit ?? ''
+      const amountStr = `${unit}${Number(usage.amount).toFixed(2)}`
+      return `<div class="usage-item"><div class="usage-title"><span class="usage-name">${usage.name}</span><span class="usage-value">${amountStr}</span></div></div>`
+    } else if (isPercentageUsage(usage)) {
+      const pct = Math.min(100, usage.percentage)
+      const resetHtml = usage.resetTime ? renderResetHtml(usage.resetTime) : ''
+      return `<div class="usage-item"><div class="usage-title"><span class="usage-name">${usage.name}</span><span class="usage-value">${pct}%</span></div>${progressBar(pct)}${resetHtml}</div>`
+    } else if (isAmountUsage(usage)) {
+      const pct =
+        usage.total > 0 ? Math.round((usage.used / usage.total) * 100) : 0
+      const displayValue = `${usage.used} / ${usage.total}`
+      const resetHtml = usage.resetTime ? renderResetHtml(usage.resetTime) : ''
+      return `<div class="usage-item"><div class="usage-title"><span class="usage-name">${usage.name}</span><span class="usage-value">${displayValue}</span></div>${progressBar(pct)}${resetHtml}</div>`
+    } else {
+      return ''
     }
-    return `<div class="usage-item"><div class="usage-title"><span class="usage-name">${usage.name}</span><span class="usage-value">${displayValue}</span></div><div class="progress-bar-container"><div class="progress-bar ${statusClass}" style="width: ${usedPercent}%"></div></div>${resetHtml}</div>`
   }
 
   useWebviewView('unifyQuotaMonitor.usageView', html, {

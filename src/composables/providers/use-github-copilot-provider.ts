@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { defineService } from 'reactive-vscode'
-import { useBaseProvider } from './use-base-provider'
-import type { UsageItem } from '../types'
+import { useBaseProvider } from '../use-base-provider'
+import type { UsageItem } from '../../types'
 
 export const useCopilotProvider = defineService(() =>
   useBaseProvider({
-    id: 'copilot',
+    id: 'githubCopilot',
     name: 'GitHub Copilot',
     fetchUsage: async (credential: string): Promise<UsageItem[]> => {
       const { authentication } = await import('vscode')
@@ -77,7 +77,6 @@ export const useCopilotProvider = defineService(() =>
       return [
         {
           name: 'Premium Request',
-          type: 'quantity',
           used,
           total: limit,
           resetTime: interactions.reset_date || interactions.next_reset_date,

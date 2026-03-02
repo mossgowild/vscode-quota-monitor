@@ -1,20 +1,23 @@
 import { createServer } from 'node:http'
+import { generatePkce } from '../utils/pkce'
 import { useBaseProvider } from './use-base-provider'
 import type { ProviderId, UsageItem } from '../types'
+import type { PkceChallenge } from '../utils/pkce'
 
 export interface OAuthProviderOptions {
   id: ProviderId
   name: string
-  fetchUsage: (credential: string) => Promise<UsageItem[]>
-  getAuthUrl: (state: string) => string
-  exchangeCode: (code: string) => Promise<string>
   port?: number
   path?: string
+  fetchUsage: (credential: string) => Promise<UsageItem[]>
+  getAuthUrl: (state: string, pkce: PkceChallenge) => string
+  exchangeCode: (code: string, verifier: string) => Promise<string>
 }
 
 export function useOAuthProvider(options: OAuthProviderOptions) {
   const authenticate = async (): Promise<string> => {
     const state = crypto.randomUUID()
+    const pkce = generatePkce()
     const port = options.port ?? 51121
     const path = options.path ?? '/callback'
 
@@ -64,11 +67,11 @@ export function useOAuthProvider(options: OAuthProviderOptions) {
     })
 
     const vscode = await import('vscode')
-    const authUrl = options.getAuthUrl(state)
+    const authUrl = options.getAuthUrl(state, pkce)
     await vscode.env.openExternal(vscode.Uri.parse(authUrl))
 
     const code = await codePromise
-    return await options.exchangeCode(code)
+    return await options.exchangeCode(code, pkce.verifier)
   }
 
   return useBaseProvider({

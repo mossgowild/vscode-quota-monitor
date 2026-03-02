@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { defineService } from 'reactive-vscode'
-import { useGoogleProvider } from './use-google-provider'
-import type { UsageItem } from '../types'
+import { useGoogleProvider } from '../use-google-provider'
+import type { UsageItem } from '../../types'
 
 interface GeminiCredential {
   accessToken?: string
@@ -12,8 +12,8 @@ interface GeminiCredential {
 
 export const useGeminiProvider = defineService(() =>
   useGoogleProvider({
-    id: 'gemini',
-    name: 'Gemini CLI',
+    id: 'googleGemini',
+    name: 'Google Gemini',
     clientId:
       '681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com',
     clientSecret: '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',
@@ -85,9 +85,7 @@ export const useGeminiProvider = defineService(() =>
 
       return quotaResult.buckets.map((bucket) => ({
         name: bucket.modelId,
-        type: 'percentage',
-        used: Math.round((1 - bucket.remainingFraction) * 100),
-        total: 100,
+        percentage: Math.round((1 - bucket.remainingFraction) * 100),
         resetTime: bucket.resetTime
       }))
     },

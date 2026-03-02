@@ -3,10 +3,16 @@
 export const PROVIDER_IDS = [
   'zhipu',
   'zai',
-  'antigravity',
-  'copilot',
-  'gemini',
-  'kimi'
+  'googleAntigravity',
+  'githubCopilot',
+  'googleGemini',
+  'kimiCode',
+  'deepSeek',
+  'moonshot',
+  'siliconFlow',
+  'openRouter',
+  'claudeCode',
+  'openaiCodex',
 ] as const
 
 export type ProviderId = (typeof PROVIDER_IDS)[number]
@@ -25,13 +31,26 @@ export interface Config {
   autoRefreshIntervalMs: number
 }
 
-export interface UsageItem {
+export interface PercentageUsage {
   name: string
-  type: 'percentage' | 'quantity'
-  used: number
-  total?: number
+  percentage: number
   resetTime?: string
 }
+
+export interface AmountUsage {
+  name: string
+  used: number
+  total: number
+  resetTime?: string
+}
+
+export interface BalanceUsage {
+  name: string
+  amount: number
+  unit?: string
+}
+
+export type UsageItem = PercentageUsage | AmountUsage | BalanceUsage
 
 export interface ViewAccount {
   name: string

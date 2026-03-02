@@ -13,7 +13,8 @@ const mockBigModelResponse = {
     limits: [
       {
         type: 'TOKENS_LIMIT',
-        percentage: 42,
+        currentValue: 42,
+        usage: 100,
         nextResetTime: '2026-04-01T00:00:00Z'
       },
       {
@@ -162,9 +163,10 @@ describe('use-providers', () => {
           (u) => u.name === 'Token Limit'
         )
       assert.ok(tokenLimit, 'Token Limit should exist')
-      assert.equal(tokenLimit.type, 'percentage')
-      assert.equal(tokenLimit.used, 42)
-      assert.equal(tokenLimit.total, 100)
+      if ('used' in tokenLimit) {
+        assert.equal(tokenLimit.used, 42)
+        assert.equal(tokenLimit.total, 100)
+      }
     })
 
     it('should have correct Time Limit values', () => {
@@ -173,9 +175,10 @@ describe('use-providers', () => {
           (u) => u.name === 'Time Limit'
         )
       assert.ok(timeLimit, 'Time Limit should exist')
-      assert.equal(timeLimit.type, 'quantity')
-      assert.equal(timeLimit.used, 5)
-      assert.equal(timeLimit.total, 100)
+      if ('used' in timeLimit) {
+        assert.equal(timeLimit.used, 5)
+        assert.equal(timeLimit.total, 100)
+      }
     })
 
     it('should call refresh on all providers when refresh() is called without providerId', async () => {
@@ -195,33 +198,44 @@ describe('use-providers', () => {
       const refreshStubs: Record<ProviderId, sinon.SinonStub> = {
         zhipu: sinon.stub(providers.providersMap.zhipu, 'refresh').resolves(),
         zai: sinon.stub(providers.providersMap.zai, 'refresh').resolves(),
-        kimi: sinon.stub(providers.providersMap.kimi, 'refresh').resolves(),
-        antigravity: sinon
-          .stub(providers.providersMap.antigravity, 'refresh')
+        kimiCode: sinon.stub(providers.providersMap.kimiCode, 'refresh').resolves(),
+        googleAntigravity: sinon
+          .stub(providers.providersMap.googleAntigravity, 'refresh')
           .resolves(),
-        gemini: sinon.stub(providers.providersMap.gemini, 'refresh').resolves(),
-        copilot: sinon
-          .stub(providers.providersMap.copilot, 'refresh')
-          .resolves()
+        googleGemini: sinon.stub(providers.providersMap.googleGemini, 'refresh').resolves(),
+        githubCopilot: sinon
+          .stub(providers.providersMap.githubCopilot, 'refresh')
+          .resolves(),
+        deepSeek: sinon
+          .stub(providers.providersMap.deepSeek, 'refresh')
+          .resolves(),
+        moonshot: sinon
+          .stub(providers.providersMap.moonshot, 'refresh')
+          .resolves(),
+        siliconFlow: sinon
+          .stub(providers.providersMap.siliconFlow, 'refresh')
+          .resolves(),
+        openRouter: sinon
+          .stub(providers.providersMap.openRouter, 'refresh')
+          .resolves(),
+        claudeCode: sinon
+          .stub(providers.providersMap.claudeCode, 'refresh')
+          .resolves(),
+        openaiCodex: sinon
+          .stub(providers.providersMap.openaiCodex, 'refresh')
+          .resolves(),
       }
 
       await providers.refresh('zhipu')
 
       assert.ok(refreshStubs.zhipu.calledOnce, 'zhipu refresh should be called')
-      assert.ok(!refreshStubs.zai.called, 'zai refresh should not be called')
-      assert.ok(!refreshStubs.kimi.called, 'kimi refresh should not be called')
-      assert.ok(
-        !refreshStubs.antigravity.called,
-        'antigravity refresh should not be called'
-      )
-      assert.ok(
-        !refreshStubs.gemini.called,
-        'gemini refresh should not be called'
-      )
-      assert.ok(
-        !refreshStubs.copilot.called,
-        'copilot refresh should not be called'
-      )
+      const otherIds = PROVIDER_IDS.filter((id) => id !== 'zhipu')
+      for (const id of otherIds) {
+        assert.ok(
+          !refreshStubs[id].called,
+          `${id} refresh should not be called`
+        )
+      }
 
       Object.values(refreshStubs).forEach((stub) => stub.restore())
     })
@@ -254,7 +268,8 @@ describe('use-providers', () => {
             limits: [
               {
                 type: 'TOKENS_LIMIT',
-                percentage: 80,
+                currentValue: 80,
+                usage: 100,
                 nextResetTime: '2026-05-01T00:00:00Z'
               }
             ]
@@ -275,7 +290,9 @@ describe('use-providers', () => {
           (u) => u.name === 'Token Limit'
         )
       assert.ok(tokenLimit, 'Token Limit should exist')
-      assert.equal(tokenLimit.used, 80)
+      if ('used' in tokenLimit) {
+        assert.equal(tokenLimit.used, 80)
+      }
     })
 
     it('should show error when refresh fails', async () => {

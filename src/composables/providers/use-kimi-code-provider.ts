@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { defineService } from 'reactive-vscode'
-import { useApiKeyProvider } from './use-api-key-provider'
-import type { UsageItem } from '../types'
+import { useApiKeyProvider } from '../use-api-key-provider'
+import type { UsageItem } from '../../types'
 
-export const useKimiProvider = defineService(() =>
+export const useKimiCodeProvider = defineService(() =>
   useApiKeyProvider({
-    id: 'kimi',
+    id: 'kimiCode',
     name: 'Kimi Code',
     keyPrefix: 'sk-kimi',
     fetchUsage: async (apiKey): Promise<UsageItem[]> => {
@@ -35,41 +35,32 @@ export const useKimiProvider = defineService(() =>
         }>
       }
 
-      const usage: UsageItem[] = []
-      const details: UsageItem[] = []
-
-      if (data.usage) {
-        const used = Number(data.usage.used) || 0
-        const total = Number(data.usage.limit) || 0
-        const percentage = total > 0 ? Math.round((used / total) * 100) : 0
-
-        usage.push({
-          name: 'Weekly Usage',
-          type: 'percentage',
-          used: percentage,
-          total: 100,
-          resetTime: data.usage.resetTime || undefined
-        })
-      }
+      const items: UsageItem[] = []
 
       if (Array.isArray(data.limits)) {
         for (const limit of data.limits) {
           if (!limit.detail) continue
           const used = Number(limit.detail.used) || 0
           const total = Number(limit.detail.limit) || 0
-          const percentage = total > 0 ? Math.round((used / total) * 100) : 0
-          details.push({
-            name: 'Rate Limit Details',
-            type: 'percentage',
-            used: percentage,
-            total: 100,
+          items.push({
+            name: 'Rate Limit',
+            percentage: total > 0 ? Math.round((used / total) * 100) : 0,
             resetTime: limit.detail.resetTime || undefined
           })
         }
       }
 
-      details.push(...usage)
-      return details
+      if (data.usage) {
+        const used = Number(data.usage.used) || 0
+        const total = Number(data.usage.limit) || 0
+        items.push({
+          name: 'Weekly Usage',
+          percentage: total > 0 ? Math.round((used / total) * 100) : 0,
+          resetTime: data.usage.resetTime || undefined
+        })
+      }
+
+      return items
     }
   })
 )

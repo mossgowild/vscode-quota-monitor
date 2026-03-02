@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { defineService } from 'reactive-vscode'
-import { useGoogleProvider } from './use-google-provider'
-import type { UsageItem } from '../types'
+import { useGoogleProvider } from '../use-google-provider'
+import type { UsageItem } from '../../types'
 
 export const useAntigravityProvider = defineService(() =>
   useGoogleProvider({
-    id: 'antigravity',
+    id: 'googleAntigravity',
     name: 'Google Antigravity',
     clientId:
       '1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com',
@@ -72,9 +72,7 @@ export const useAntigravityProvider = defineService(() =>
         const remainingFraction = modelData.quotaInfo.remainingFraction ?? 0
         usage.push({
           name: modelId,
-          type: 'percentage',
-          used: Math.round((1 - remainingFraction) * 100),
-          total: 100,
+          percentage: Math.round((1 - remainingFraction) * 100),
           resetTime: modelData.quotaInfo.resetTime,
         })
       }

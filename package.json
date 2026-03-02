@@ -55,20 +55,32 @@
           },
           "propertyNames": {
             "enum": [
-              "antigravity",
-              "copilot",
-              "gemini",
-              "zhipu",
+              "claudeCode",
+              "deepSeek",
+              "githubCopilot",
+              "googleAntigravity",
+              "googleGemini",
+              "kimiCode",
+              "moonshot",
+              "openRouter",
+              "openaiCodex",
+              "siliconFlow",
               "zai",
-              "kimi"
+              "zhipu"
             ],
             "enumDescriptions": [
-              "Google Antigravity",
+              "Claude Code",
+              "DeepSeek",
               "GitHub Copilot",
-              "Gemini CLI",
-              "Zhipu AI (智谱 AI)",
+              "Google Antigravity",
+              "Google Gemini",
+              "Kimi Code",
+              "Moonshot AI",
+              "OpenRouter",
+              "OpenAI Codex",
+              "SiliconFlow",
               "Z.AI",
-              "Kimi Code"
+              "Zhipu AI"
             ]
           }
         },
