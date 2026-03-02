@@ -98,6 +98,11 @@
     },
     "commands": [
       {
+        "command": "unifyQuotaMonitor.focus",
+        "title": "Show Quota Monitor",
+        "category": "Quota Monitor"
+      },
+      {
         "command": "unifyQuotaMonitor.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
@@ -113,7 +118,7 @@
         {
           "id": "unifyQuotaMonitor-sidebar",
           "title": "Quota",
-          "icon": "$(dashboard)"
+          "icon": "images/icon.svg"
         }
       ]
     },
@@ -123,7 +128,7 @@
           "type": "webview",
           "id": "unifyQuotaMonitor.usageView",
           "name": "Quota",
-          "icon": "$(dashboard)",
+          "icon": "images/icon.svg",
           "contextualTitle": "Quota"
         }
       ]

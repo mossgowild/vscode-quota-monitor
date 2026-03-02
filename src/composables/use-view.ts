@@ -3,6 +3,7 @@ import { env } from 'vscode'
 import type { ProviderId, UsageItem, ViewAccount, ViewProvider } from '../types'
 import { useProviders } from './use-providers'
 import { isAmountUsage, isBalanceUsage, isPercentageUsage } from '../common'
+import iconSvg from '../../images/icon.svg?raw'
 
 export function useView() {
   const { providersMap } = useProviders()
@@ -220,8 +221,7 @@ export function useView() {
   })
 
   function renderEmptyState(): string {
-    const svg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20V14"/></svg>`
-    return `<div class="empty-state"><div class="empty-state-icon">${svg}</div><div class="empty-state-title">No Active Accounts</div><div class="empty-state-description">Add an account to monitor your quota usage</div></div>`
+    return `<div class="empty-state"><div class="empty-state-icon">${iconSvg}</div><div class="empty-state-title">No Active Accounts</div><div class="empty-state-description">Add an account to monitor your quota usage</div></div>`
   }
 
   function renderProviders(list: ViewProvider[], locale: string): string {
