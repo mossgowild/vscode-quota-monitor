@@ -1,28 +1,8 @@
 import { computed, useWebviewView } from 'reactive-vscode'
 import { env } from 'vscode'
-import type {
-  ProviderId,
-  UsageItem,
-  PercentageUsage,
-  AmountUsage,
-  BalanceUsage,
-  ViewAccount
-} from '../types'
+import type { ProviderId, UsageItem, ViewAccount, ViewProvider } from '../types'
 import { useProviders } from './use-providers'
-
-type ProviderItem = { id: ProviderId; name: string; accounts: ViewAccount[] }
-
-function isPercentageUsage(u: UsageItem): u is PercentageUsage {
-  return 'percentage' in u
-}
-
-function isAmountUsage(u: UsageItem): u is AmountUsage {
-  return 'used' in u
-}
-
-function isBalanceUsage(u: UsageItem): u is BalanceUsage {
-  return 'amount' in u
-}
+import { isAmountUsage, isBalanceUsage, isPercentageUsage } from '../common'
 
 export function useView() {
   const { providersMap } = useProviders()
@@ -229,7 +209,7 @@ export function useView() {
                 const mins = Math.floor((diffMs % 3600000) / 60000);
                 const secs = Math.floor((diffMs % 60000) / 1000);
                 const timeStr = days > 0 ? (days + 'd ' + hours + 'h') : totalHours > 0 ? (totalHours + 'h ' + mins + 'm') : (mins + 'm ' + secs + 's');
-                el.textContent = 'Reset ' + timeStr;
+                el.textContent = 'Reset in ' + timeStr;
               });
             }
             setInterval(updateTimers, 1000);
@@ -244,7 +224,7 @@ export function useView() {
     return `<div class="empty-state"><div class="empty-state-icon">${svg}</div><div class="empty-state-title">No Active Accounts</div><div class="empty-state-description">Add an account to monitor your quota usage</div></div>`
   }
 
-  function renderProviders(list: ProviderItem[], locale: string): string {
+  function renderProviders(list: ViewProvider[], locale: string): string {
     return list
       .filter((p) => p.accounts.length > 0)
       .map((p) => renderProvider(p, locale))
@@ -252,7 +232,7 @@ export function useView() {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function renderProvider(provider: ProviderItem, _locale: string): string {
+  function renderProvider(provider: ViewProvider, _locale: string): string {
     const hasMultiple = provider.accounts.length > 1
     return `<div class="provider-section"><div class="provider-header"><span>${provider.name}</span></div>${provider.accounts.map((acc) => renderAccount(acc, hasMultiple)).join('')}</div>`
   }
@@ -264,7 +244,7 @@ export function useView() {
     const usageHtml = account.usage.map((u) => renderUsageItem(u)).join('')
     if (!showLabel)
       return `<div class="account-block">${errorHtml}<div class="usage-grid">${usageHtml}</div></div>`
-    return `<div class="account-block"><div class="account-label">${account.name}</div>${errorHtml}<div class="usage-grid">${usageHtml}</div></div>`
+    return `<div class="account-block"><div class="account-label">${account.name ?? account.fallbackName}</div>${errorHtml}<div class="usage-grid">${usageHtml}</div></div>`
   }
 
   function renderResetHtml(resetTime: string): string {
@@ -282,7 +262,7 @@ export function useView() {
         : totalHours > 0
           ? `${totalHours}h ${mins}m`
           : `${mins}m ${secs}s`
-    return `<div class="usage-reset" data-reset-time="${resetTime}">Reset ${timeStr}</div>`
+    return `<div class="usage-reset" data-reset-time="${resetTime}">Reset in ${timeStr}</div>`
   }
 
   function progressBar(percent: number): string {

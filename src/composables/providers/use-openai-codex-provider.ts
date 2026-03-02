@@ -104,8 +104,8 @@ export const useCodexProvider = defineService(() =>
             })
           }
 
-          parseWindow(rateLimit.primary_window, '5-hour limit')
-          parseWindow(rateLimit.secondary_window, 'Weekly limit')
+          parseWindow(rateLimit.primary_window, 'Primary Limit')
+          parseWindow(rateLimit.secondary_window, 'Secondary Limit')
 
           if (items.length > 0) {
             return items

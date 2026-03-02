@@ -7,6 +7,7 @@ export const useCopilotProvider = defineService(() =>
   useBaseProvider({
     id: 'githubCopilot',
     name: 'GitHub Copilot',
+    login: { type: 'oauth' },
     fetchUsage: async (credential: string): Promise<UsageItem[]> => {
       const { authentication } = await import('vscode')
       const session = await authentication.getSession('github', ['read:user'], {

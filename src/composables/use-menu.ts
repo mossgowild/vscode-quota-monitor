@@ -1,7 +1,15 @@
 import { defineService } from 'reactive-vscode'
-import { QuickInputButtons, QuickPickItemKind, ThemeIcon, Uri, env, window } from 'vscode'
+import {
+  QuickInputButtons,
+  QuickPickItemKind,
+  ThemeIcon,
+  Uri,
+  env,
+  window
+} from 'vscode'
 import type { ProviderId } from '../types'
 import { useProviders } from './use-providers'
+import { showInputBoxWithBack } from '../utils/show-input-box-with-back'
 
 export const useMenu = defineService(() => {
   const { providersMap } = useProviders()
@@ -16,6 +24,7 @@ export const useMenu = defineService(() => {
     const qp = window.createQuickPick<ProviderPickItem>()
     qp.title = 'Select Provider'
     qp.placeholder = 'Choose a provider to add'
+    qp.buttons = [QuickInputButtons.Back]
     qp.items = (Object.keys(providersMap) as ProviderId[]).map((id) => {
       const { meta } = providersMap[id]
       const helpUrl = meta.login.helpUrl
@@ -34,6 +43,13 @@ export const useMenu = defineService(() => {
       }
     })
     return new Promise<void>((resolve) => {
+      qp.onDidTriggerButton(async (btn) => {
+        if (btn === QuickInputButtons.Back) {
+          qp.hide()
+          await showSettingsMenu()
+          resolve()
+        }
+      })
       qp.onDidTriggerItemButton((e) => {
         const { helpUrl } = e.item
         if (helpUrl) env.openExternal(Uri.parse(helpUrl))
@@ -49,19 +65,22 @@ export const useMenu = defineService(() => {
         try {
           if (provider.meta.login.type === 'apiKey') {
             const prefix = provider.meta.login.apiKeyPrefix ?? 'sk'
-            const apiKey = await window.showInputBox({
+            await showInputBoxWithBack({
               title: `Enter ${provider.meta.name} API Key`,
               prompt: `Format: ${prefix}...`,
               password: true,
-              ignoreFocusOut: true,
-              placeHolder: `${prefix}...`,
-              validateInput: (v: string) => {
+              placeholder: `${prefix}...`,
+              validate: (v: string) => {
                 if (!v?.trim()) return 'API Key is required'
-                if (!v.startsWith(prefix)) return `Key must start with ${prefix}`
+                if (!v.startsWith(prefix))
+                  return `Key must start with ${prefix}`
                 return null
+              },
+              onBack: () => showAddAccount(),
+              onAccept: async (apiKey) => {
+                await provider.login(apiKey.trim())
               }
             })
-            await provider.login(apiKey?.trim())
           } else {
             await provider.login()
           }
@@ -92,7 +111,7 @@ export const useMenu = defineService(() => {
       for (let i = 0; i < accounts.length; i++) {
         const acc = accounts[i]
         items.push({
-          label: acc.name,
+          label: acc.name ?? acc.fallbackName,
           providerId,
           accountIndex: i
         })
@@ -133,12 +152,15 @@ export const useMenu = defineService(() => {
     if (!account) return
 
     const qp = window.createQuickPick()
-    qp.title = `${providerName} - ${account.name}`
+    qp.title = `${providerName} - ${account.name ?? account.fallbackName}`
     qp.placeholder = 'Select an action'
     qp.buttons = [QuickInputButtons.Back]
     qp.items = [
-      { label: '$(edit) Set Name', description: 'Change the display name for this account' },
-      { label: '$(trash) Logout', description: 'Remove this account' }
+      {
+        label: 'Set Name',
+        description: 'Change the display name for this account'
+      },
+      { label: 'Logout', description: 'Remove this account' }
     ]
 
     return new Promise<void>((resolve) => {
@@ -152,25 +174,37 @@ export const useMenu = defineService(() => {
       qp.onDidAccept(async () => {
         const selected = qp.activeItems[0]
         qp.hide()
-        if (!selected) { resolve(); return }
+        if (!selected) {
+          resolve()
+          return
+        }
 
-        if (selected.label === '$(edit) Set Name') {
-          const name = await window.showInputBox({
+        if (selected.label === 'Set Name') {
+          await showInputBoxWithBack({
             title: 'Account Name',
             prompt: 'Enter a display name for this account',
             value: account.name,
-            placeHolder: `Current: ${account.name}`
+            placeholder: account.fallbackName,
+            onBack: () => showAccountActions(providerId, accountIndex),
+            onAccept: (name) => {
+              providersMap[providerId].rename(
+                accountIndex,
+                name.trim() ? name : account.fallbackName
+              )
+            }
           })
-          if (name !== undefined) providersMap[providerId].rename(accountIndex, name)
-        } else if (selected.label === '$(trash) Logout') {
+        } else if (selected.label === 'Logout') {
+          const displayName = account.name ?? account.fallbackName
           const confirmed = await window.showWarningMessage(
-            `Logout from ${providerName} - ${account.name}?`,
+            `Logout from ${providerName} - ${displayName}?`,
             'Confirm',
             'Cancel'
           )
           if (confirmed === 'Confirm') {
             providersMap[providerId].logout(accountIndex)
-            window.showInformationMessage(`Logged out from ${providerName} - ${account.name}`)
+            window.showInformationMessage(
+              `Logged out from ${providerName} - ${displayName}`
+            )
           }
           await showSettingsMenu()
         }

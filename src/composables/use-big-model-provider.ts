@@ -61,8 +61,7 @@ export function useBigModelProvider(options: BigModelProviderOptions) {
         if (limit.type === 'TOKENS_LIMIT') {
           usage.push({
             name: 'Token Limit',
-            used: Number(limit.currentValue) || 0,
-            total: Number(limit.usage) || 0,
+            percentage: Number(limit.percentage) || 0,
             resetTime: resetDate?.toISOString()
           })
         } else if (limit.type === 'TIME_LIMIT') {

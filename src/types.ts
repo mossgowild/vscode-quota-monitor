@@ -1,19 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
-export const PROVIDER_IDS = [
-  'zhipu',
-  'zai',
-  'googleAntigravity',
-  'githubCopilot',
-  'googleGemini',
-  'kimiCode',
-  'deepSeek',
-  'moonshot',
-  'siliconFlow',
-  'openRouter',
-  'claudeCode',
-  'openaiCodex',
-] as const
+import { PROVIDER_IDS } from './common'
 
 export type ProviderId = (typeof PROVIDER_IDS)[number]
 
@@ -24,7 +9,6 @@ export interface ConfigAccount {
 
 export type ConfigProvider = Record<ProviderId, ConfigAccount[]>
 
-// Flattened config type (required by reactive-vscode defineConfig)
 export interface Config {
   providers: ConfigProvider
   autoRefreshEnabled: boolean
@@ -53,7 +37,8 @@ export interface BalanceUsage {
 export type UsageItem = PercentageUsage | AmountUsage | BalanceUsage
 
 export interface ViewAccount {
-  name: string
+  name?: string
+  fallbackName: string
   usage: UsageItem[]
   error?: string
 }

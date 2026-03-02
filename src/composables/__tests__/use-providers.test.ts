@@ -3,7 +3,8 @@ import sinon from 'sinon'
 import { watch } from '@reactive-vscode/reactivity'
 import { ConfigurationTarget } from 'vscode'
 import { useProviders } from '../use-providers'
-import { PROVIDER_IDS, type ProviderId } from '../../types'
+import { PROVIDER_IDS } from '../../common'
+import type { ProviderId } from '../../types'
 import { useConfig } from '../use-config'
 
 const mockBigModelResponse = {
@@ -90,10 +91,9 @@ describe('use-providers', () => {
     })
 
     it('should have default name format', () => {
-      assert.equal(
-        providers.providersMap.zhipu.accounts.value[0].name,
-        'Zhipu AI #1'
-      )
+      const account = providers.providersMap.zhipu.accounts.value[0]
+      assert.equal(account.name, undefined)
+      assert.equal(account.fallbackName, 'Zhipu AI #1')
     })
 
     it('should have no usage before refresh', () => {

@@ -1,4 +1,9 @@
-import { computed, DeepReadonly, ref, type ComputedRef } from 'reactive-vscode'
+import {
+  computed,
+  ref,
+  watch,
+  type ComputedRef
+} from 'reactive-vscode'
 import { ConfigurationTarget } from 'vscode'
 import { useConfig } from './use-config'
 import type {
@@ -36,15 +41,23 @@ export function useBaseProvider(
   options: BaseProviderOptions
 ): UseBaseProviderReturn {
   const config = useConfig()
+
+  // Write-through cache: holds value immediately after a write,
+  // cleared once VS Code config confirms the update.
+  // This ensures getter returns the new value synchronously.
+  const pending = ref<ConfigAccount[] | undefined>(undefined)
+
   const accountsConfig = computed({
-    get() {
+    get(): ConfigAccount[] {
+      if (pending.value !== undefined) return pending.value
       return (
         config.has(`providers.${options.id}`)
           ? config.providers[options.id]
           : []
-      ) as DeepReadonly<ConfigAccount[]>
+      ) as ConfigAccount[]
     },
     set(value: ConfigAccount[]) {
+      pending.value = value
       const current = (config.get('providers') as Record<string, unknown>) ?? {}
       const updated = { ...current }
       if (value.length > 0) {
@@ -52,33 +65,39 @@ export function useBaseProvider(
       } else {
         delete updated[options.id]
       }
-      config.update(
-        'providers',
-        Object.keys(updated).length > 0 ? updated : undefined,
-        ConfigurationTarget.Global
-      )
+      config
+        .update(
+          'providers',
+          Object.keys(updated).length > 0 ? updated : undefined,
+          ConfigurationTarget.Global
+        )
+        .then(() => { pending.value = undefined })
     }
   })
   const accountsData = ref<{ usage?: UsageItem[]; error?: string }[]>([])
   const accounts = computed((): ViewAccount[] => {
     return accountsConfig.value.map((account, index) => ({
-      name: account.name ?? `${options.name} #${index + 1}`,
-      usage: accountsData.value[index]?.usage ?? [],
+      name: account.name,
+      fallbackName: `${options.name} #${index + 1}`,
+      usage: [...(accountsData.value[index]?.usage ?? [])],
       error: accountsData.value[index]?.error
     }))
+  })
+
+  watch(accountsConfig, (newVal: ConfigAccount[]) => {
+    newVal.forEach((_: ConfigAccount, index: number) => {
+      refresh(index)
+    })
   })
 
   const login = async (credential?: string) => {
     const resolved = credential ?? (await options.authenticate?.())
     if (!resolved) throw new Error('Authentication cancelled')
     accountsConfig.value = [...accountsConfig.value, { credential: resolved }]
-    refresh(accountsConfig.value.length - 1)
   }
 
   const logout = (accountIndex: number) => {
-    accountsConfig.value = accountsConfig.value.filter(
-      (_, i) => i !== accountIndex
-    )
+    accountsConfig.value = accountsConfig.value.filter((_, i) => i !== accountIndex)
     accountsData.value.splice(accountIndex, 1)
   }
 
