@@ -1,143 +1,100 @@
 # Unify Quota Monitor
 
-> A beautiful VS Code extension to monitor usage quotas for multiple providers in real-time
+> Monitor all your AI provider quotas in one VS Code sidebar panel
 
 ![Preview](images/image.png)
 
-Tired of switching between platforms to check your AI quota usage? This extension consolidates all usage information into a single sidebar panel, giving you an at-a-glance view of quota usage across all your accounts.
+Tired of switching between browser tabs to check how much quota you have left? Unify Quota Monitor brings every provider into a single panel that lives right inside your editor — no extra windows, no interruptions.
+
+## Feels right at home in VS Code
+
+The panel uses VS Code's own fonts, spacing, and color tokens, so it blends naturally with any theme — dark, light, or high contrast. Progress bars and text automatically adapt to your active color theme.
 
 ## Quick Start
 
-1. Install from VS Code Extension Marketplace
-2. Click the **Quota** icon in the sidebar
-3. Click **$(plus)** → Select Provider → Authenticate
+1. Install from the VS Code Extension Marketplace
+2. Click the **Quota** icon in the Activity Bar
+3. Click the gear icon → **Add Account** → choose a provider and sign in
 
-That's it! You can now monitor your quota usage in real-time.
+Your quota usage appears immediately and refreshes every minute in the background.
 
 ## Supported Providers
 
-| Provider | Quota Types | Authentication |
-|----------|-------------|----------------|
-| Zhipu AI | Token limits, MCP quotas | API Key |
-| Z.AI | Token limits, MCP quotas | API Key |
-| Kimi Code | Weekly usage, rate limits | API Key |
-| Google Antigravity | Token usage, reset countdown | Google OAuth |
-| Gemini CLI | Usage percentage, reset countdown | Google OAuth |
-| GitHub Copilot | Premium requests, reset countdown | GitHub OAuth |
+| Provider | What's shown |
+|----------|--------------|
+| Zhipu AI | Token usage per model |
+| Z.AI | Token usage per model |
+| Kimi Code | Rate limit usage |
+| Google Antigravity | Usage % by model, reset countdown |
+| Gemini CLI | Usage % by model, reset countdown |
+| GitHub Copilot | Premium request usage, reset countdown |
+| DeepSeek | Account balance |
+| Moonshot AI | Account balance |
+| SiliconFlow | Account balance |
+| OpenRouter | Account balance |
+| Claude Code | Usage % by model |
+| OpenAI Codex | Usage % by resource |
 
 ## Features
 
-- **Real-time Monitoring**: All quotas in one sidebar panel
-- **Smart Sorting**: Most remaining quota shown first
-- **Multi-Account**: Add multiple accounts per provider with aliases
-- **Auto Refresh**: Every 60 seconds by default
+- **All in one place** — every provider and account in a single sidebar panel
+- **Native look & feel** — uses VS Code's theme colors and fonts, matches dark/light/high-contrast themes automatically
+- **Color-coded progress bars** — green for normal, yellow at ≥ 75%, red at ≥ 90% used
+- **Live reset timers** — countdown updates every second right in the panel
+- **Multi-account support** — add multiple accounts per provider, each with a custom alias
+- **Background auto-refresh** — runs quietly every 60 seconds without interrupting your work
 
-## User Guide
+## Adding an Account
 
-### Adding Accounts
+1. Click the gear icon in the Quota panel header
+2. Select **Add Account** and pick a provider
+3. Sign in:
+   - **API key providers** (Zhipu, Z.AI, Kimi, DeepSeek, Moonshot, SiliconFlow, OpenRouter) — paste your API key when prompted
+   - **Google providers** (Antigravity, Gemini CLI) — a browser window opens for Google sign-in
+   - **Claude Code / OpenAI Codex** — a browser window opens; no manual token copying needed
+   - **GitHub Copilot** — uses your existing VS Code GitHub sign-in automatically, nothing extra required
+4. Optionally give the account an alias like "Work" or "Personal"
 
-1. Click the **$(plus)** button in the top-right corner of the Quota panel
-2. Select a Provider:
-   - **Zhipu AI / Z.AI / Kimi**: Enter your API Key
-   - **Google Antigravity / Gemini CLI**: Authenticate via browser OAuth
-   - **GitHub Copilot**: Uses VS Code's built-in GitHub authentication
-3. (Optional) Set an account alias like "Work" or "Personal"
+## Managing Accounts
 
-### Managing Accounts
+Click the gear icon, select any account, then choose:
+- **Set Name** — rename the account alias
+- **Logout** — remove the account
 
-1. Click the **$(plus)** button in the top-right corner
-2. Click on any account in the list
-3. Choose an action:
-   - **Set Name**: Rename the account
-   - **Logout**: Remove the account
+## Reading the Display
 
-### Understanding the Display
-
-- **Provider Section**: Shows the provider name
-- **Account Section**: 
-  - Single account: No label, shows usage directly
-  - Multiple accounts: Shows alias/ID for each account
-- **Progress Bars**: Visual percentage of quota used
-  - Green: Normal usage
-  - Yellow: ≥75% used
-  - Red: ≥90% used
-- **Reset Timer**: Countdown to quota reset (e.g., "4h 25m")
-
-### Refreshing Data
-
-- **Auto Refresh**: Every 60 seconds by default
-- **Manual Refresh**: Click the **$(refresh)** button in the top-right corner
+- **Progress bars** follow your active VS Code color theme automatically
+- **Reset timer** counts down live: `4h 25m`, `59m 30s`, `2d 4h`
+- **Balance** (DeepSeek, Moonshot, SiliconFlow, OpenRouter) shows a currency amount instead of a bar
+- **Single account** — usage shown directly without a header label
+- **Multiple accounts** — each account shows its alias above its usage
 
 ## Configuration
 
-Search for `unifyQuotaMonitor` in VS Code Settings:
+Search `Unify Quota Monitor` in VS Code Settings to adjust:
 
-```json
-{
-  "unifyQuotaMonitor.autoRefreshEnabled": true,
-  "unifyQuotaMonitor.autoRefreshIntervalMs": 60000
-}
-```
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `autoRefreshEnabled` | Enable automatic refresh | `true` |
-| `autoRefreshIntervalMs` | Refresh interval in milliseconds | `60000` (1 minute) |
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Auto Refresh | Enable background refresh | On |
+| Refresh Interval | How often to refresh | 60 seconds |
 
 ## FAQ
 
-**Q: How do I distinguish between multiple accounts?**  
-A: Set aliases for each account (e.g., "Work", "Personal") when adding or by editing the account.
+**Q: How are my credentials stored?**  
+A: Credentials are saved in VS Code's own settings storage — the same place other extensions store sensitive data. Nothing is sent to any external server by this extension.
 
-**Q: Where is my data stored?**  
-A: All account credentials are stored securely in VS Code's global settings.
+**Q: Why isn't GitHub Copilot showing quota?**  
+A: Make sure you're signed into GitHub in VS Code. The extension reuses your existing session — no separate login needed.
 
-**Q: Will auto-refresh affect performance?**  
-A: No. The default refresh is once per minute and very lightweight.
-
-**Q: Why isn't my GitHub Copilot quota showing?**  
-A: Make sure you're signed into GitHub in VS Code. The extension uses VS Code's native GitHub authentication.
-
-## Development
-
-```bash
-git clone https://github.com/mossgowild/vscode-unify-quota-monitor.git
-cd vscode-unify-quota-monitor
-npm install
-npm run build
-```
-code .
-```
-
-### Available Commands
-
-- `unifyQuotaMonitor.manageAccounts`: Open account management menu
-- `unifyQuotaMonitor.refresh`: Refresh usage data
-
-### Configuration Fields
-
-**unifyQuotaMonitor.providers** (Auto-managed by extension, no manual editing needed)
-```json
-[
-  {
-    "provider": "openai",
-    "name": "OpenAI Group",
-    "accounts": [
-      {
-        "credential": "sk-xxx...",
-        "name": "Work Account"
-      }
-    ]
-  }
-]
-```
+**Q: Does auto-refresh affect performance?**  
+A: No. Requests are lightweight and run silently in the background.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Issues and Pull Requests are welcome!
 
-## 📄 License
+## License
 
 [MIT](LICENSE)

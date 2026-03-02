@@ -21,12 +21,15 @@ F5                   # Start debugging
 
 ## Documentation
 
-| Topic | File |
-|---|---|
-| Architecture | [docs/architecture.md](./docs/architecture.md) |
-| Composables | [docs/composables.md](./docs/composables.md) |
-| Providers | [docs/providers.md](./docs/providers.md) |
-| Authentication | [docs/authentication.md](./docs/authentication.md) |
-| UI/UX | [docs/ui-ux.md](./docs/ui-ux.md) |
-| Testing | [docs/docker-testing.md](./docs/docker-testing.md) |
+| Topic | File | Audience |
+|---|---|---|
+| User-facing description | [README.md](./README.md) | End users / Marketplace |
+| Architecture | [docs/architecture.md](./docs/architecture.md) | Developers |
+| Composables | [docs/composables.md](./docs/composables.md) | Developers |
+| Providers | [docs/providers.md](./docs/providers.md) | Developers |
+| Authentication | [docs/authentication.md](./docs/authentication.md) | Developers |
+| UI/UX | [docs/ui-ux.md](./docs/ui-ux.md) | Developers |
+| Testing | [docs/docker-testing.md](./docs/docker-testing.md) | Developers |
+
+> **README.md** is the VS Code Marketplace listing. Keep it user-focused: features, supported providers, how to add accounts. No internal implementation details (commands IDs, config keys schema, build steps).
 

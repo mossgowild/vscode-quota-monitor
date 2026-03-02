@@ -53,23 +53,23 @@ Aggregates all provider instances and manages global refresh.
 
 ```typescript
 export interface UseProvidersReturn {
-  providersMap: Record<ProviderId, UseBaseProviderReturn>
+  providerById: Record<ProviderId, UseBaseProviderReturn>
   refresh: (providerId?: ProviderId, accountIndex?: number) => Promise<void>
 }
 ```
 
-### providersMap
+### providerById
 
 Direct access to all provider instances:
 
 ```typescript
-const { providersMap } = useProviders()
+const { providerById } = useProviders()
 
 // Access specific provider
-providersMap['zhipu'].login()
-providersMap['kimi'].logout(0)
-providersMap['zhipu'].rename(0, 'Work')
-providersMap['zhipu'].accounts.value  // reactive accounts
+providerById['zhipu'].login()
+providerById['kimiCode'].logout(0)
+providerById['zhipu'].rename(0, 'Work')
+providerById['zhipu'].accounts.value  // reactive accounts
 ```
 
 ### refresh
@@ -106,42 +106,42 @@ watch(
 QuickPick menu interactions for account management.
 
 ```typescript
-export function useMenu() {
-  const { providersMap } = useProviders()
+export const useMenu = defineService(() => {
+  const { providerById } = useProviders()
   // ...
-  return { showAccountMenu, showAccountActions }
-}
+  return { show }
+})
 ```
 
-### showAccountMenu
+### show
 
-Displays all accounts with "Add Account" option:
+Opens the main settings menu (wraps internal `showSettingsMenu`):
 
 ```typescript
-async function showAccountMenu(): Promise<void>
+const { show } = useMenu()
+show()  // opens QuickPick with all accounts + Add/Refresh actions
 ```
 
-**Flow**:
-1. Lists all provider accounts
-2. Shows "Add Account" option
-3. On account selection → shows account actions
-4. On "Add Account" → shows provider selection → calls `login()`
+**Internal Flow**:
+1. `showSettingsMenu` — lists all provider accounts with refresh/add buttons
+2. On account selection → `showAccountActions`
+3. On Add → `showAddAccount` → provider selection → API key input or OAuth flow
+4. On Help button → opens provider documentation URL
+
+### showAddAccount
+
+Internal function for adding a new account:
+
+- API Key providers: shows `showInputBoxWithBack` with prefix validation
+- OAuth providers: calls `provider.login()` directly (opens browser)
 
 ### showAccountActions
 
-Actions for a specific account:
+Internal function for managing a specific account:
 
-```typescript
-async function showAccountActions(
-  providerId: ProviderId,
-  accountIndex: number
-): Promise<void>
-```
-
-**Actions**:
-- ← Back: Return to account menu
-- Set Name: Rename account
-- Logout: Remove account
+- **Set Name**: Rename via `showInputBoxWithBack`
+- **Logout**: Confirm dialog → `provider.logout(index)`
+- **← Back**: Returns to `showSettingsMenu`
 
 ## useView
 
@@ -151,10 +151,10 @@ Webview panel registration and HTML generation.
 
 ```typescript
 export function useView() {
-  const { providersMap } = useProviders()
+  const { providerById } = useProviders()
   
   const html = computed(() => {
-    // Generate HTML from providersMap
+    // Generate HTML from providerById
   })
   
   useWebviewView('unifyQuotaMonitor.usageView', html, {
@@ -165,7 +165,7 @@ export function useView() {
 
 ### HTML Generation
 
-- Reactive: `html` computed updates when `providersMap` changes
+- Reactive: `html` computed updates when `providerById` changes
 - No return value: Composable only registers the webview
 - Scroll preservation: Maintains scroll position across updates
 
@@ -173,10 +173,10 @@ export function useView() {
 
 ```typescript
 const providers = computed(() =>
-  (Object.keys(providersMap) as ProviderId[]).map((id) => ({
+  (Object.keys(providerById) as ProviderId[]).map((id) => ({
     id,
-    name: providersMap[id].name,
-    accounts: providersMap[id].accounts.value
+    name: providerById[id].meta.name,
+    accounts: providerById[id].accounts.value
   }))
 )
 ```
@@ -188,7 +188,7 @@ const providers = computed(() =>
 │  View Layer                             │
 │  ├── useMenu (QuickPick)                │
 │  └── useView (Webview)                  │
-│       ↓ can only call providersMap       │
+│       ↓ can only call providerById       │
 ├─────────────────────────────────────────┤
 │  Controller Layer                       │
 │  └── useProviders                       │
