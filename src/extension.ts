@@ -9,10 +9,10 @@ export = defineExtension(() => {
   logger.info('Extension Activated')
 
   const { refresh } = useProviders()
-  const { showAccountMenu } = useMenu()
+  const { show } = useMenu()
   useView()
 
-  useCommand('unifyQuotaMonitor.settings', () => showAccountMenu())
+  useCommand('unifyQuotaMonitor.settings', () => show())
   useCommand('unifyQuotaMonitor.refresh', () => refresh())
 
   refresh()

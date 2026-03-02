@@ -30,7 +30,7 @@ export function useView() {
   const providers = computed(() =>
     (Object.keys(providersMap) as ProviderId[]).map((id) => ({
       id,
-      name: providersMap[id].name,
+      name: providersMap[id].meta.name,
       accounts: providersMap[id].accounts.value
     }))
   )

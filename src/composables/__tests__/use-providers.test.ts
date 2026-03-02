@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { strict as assert } from 'node:assert'
 import sinon from 'sinon'
 import { watch } from '@reactive-vscode/reactivity'
-import { window, ConfigurationTarget } from 'vscode'
+import { ConfigurationTarget } from 'vscode'
 import { useProviders } from '../use-providers'
 import { PROVIDER_IDS, type ProviderId } from '../../types'
 import { useConfig } from '../use-config'
@@ -50,7 +49,6 @@ function waitUntil(predicate: () => boolean, timeoutMs = 5000): Promise<void> {
 describe('use-providers', () => {
   let config: ReturnType<typeof useConfig>
   let providers: ReturnType<typeof useProviders>
-  let showInputBoxStub: sinon.SinonStub
   let fetchStub: sinon.SinonStub
 
   before(async () => {
@@ -59,9 +57,7 @@ describe('use-providers', () => {
   })
 
   afterEach(() => {
-    if (showInputBoxStub?.restore) showInputBoxStub.restore()
     if (fetchStub?.restore) fetchStub.restore()
-    showInputBoxStub = undefined as any
     fetchStub = undefined as any
   })
 
@@ -83,16 +79,10 @@ describe('use-providers', () => {
 
   describe('login', () => {
     it('should add account when API key login succeeds', async () => {
-      showInputBoxStub = sinon
-        .stub(window, 'showInputBox')
-        .resolves('sk.test-api-key')
-
-      await providers.providersMap.zhipu.login()
+      await providers.providersMap.zhipu.login('sk.test-api-key')
       await waitUntil(
         () => providers.providersMap.zhipu.accounts.value.length > 0
       )
-
-      showInputBoxStub.restore()
     })
 
     it('should have 1 account after login', () => {
@@ -107,17 +97,16 @@ describe('use-providers', () => {
     })
 
     it('should have no usage before refresh', () => {
-      assert.equal(providers.providersMap.zhipu.accounts.value[0].usage.length, 0)
+      assert.equal(
+        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        0
+      )
     })
 
     it('should reject when user cancels API key input', async () => {
-      showInputBoxStub = sinon.stub(window, 'showInputBox').resolves(undefined)
-
       await assert.rejects(() => providers.providersMap.zhipu.login(), {
         message: 'Authentication cancelled'
       })
-
-      showInputBoxStub.restore()
     })
   })
 
@@ -142,7 +131,10 @@ describe('use-providers', () => {
     })
 
     it('should have no usage before refresh', () => {
-      assert.equal(providers.providersMap.zhipu.accounts.value[0].usage.length, 0)
+      assert.equal(
+        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        0
+      )
     })
   })
 
@@ -152,7 +144,10 @@ describe('use-providers', () => {
 
       await providers.providersMap.zhipu.refresh(0)
 
-      assert.equal(providers.providersMap.zhipu.accounts.value[0].usage.length, 2)
+      assert.equal(
+        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        2
+      )
 
       fetchStub.restore()
     })
@@ -198,11 +193,15 @@ describe('use-providers', () => {
       const refreshStubs: Record<ProviderId, sinon.SinonStub> = {
         zhipu: sinon.stub(providers.providersMap.zhipu, 'refresh').resolves(),
         zai: sinon.stub(providers.providersMap.zai, 'refresh').resolves(),
-        kimiCode: sinon.stub(providers.providersMap.kimiCode, 'refresh').resolves(),
+        kimiCode: sinon
+          .stub(providers.providersMap.kimiCode, 'refresh')
+          .resolves(),
         googleAntigravity: sinon
           .stub(providers.providersMap.googleAntigravity, 'refresh')
           .resolves(),
-        googleGemini: sinon.stub(providers.providersMap.googleGemini, 'refresh').resolves(),
+        googleGemini: sinon
+          .stub(providers.providersMap.googleGemini, 'refresh')
+          .resolves(),
         githubCopilot: sinon
           .stub(providers.providersMap.githubCopilot, 'refresh')
           .resolves(),
@@ -223,7 +222,7 @@ describe('use-providers', () => {
           .resolves(),
         openaiCodex: sinon
           .stub(providers.providersMap.openaiCodex, 'refresh')
-          .resolves(),
+          .resolves()
       }
 
       await providers.refresh('zhipu')
@@ -279,7 +278,10 @@ describe('use-providers', () => {
 
       await providers.providersMap.zhipu.refresh(0)
 
-      assert.equal(providers.providersMap.zhipu.accounts.value[0].usage.length, 1)
+      assert.equal(
+        providers.providersMap.zhipu.accounts.value[0].usage.length,
+        1
+      )
 
       fetchStub.restore()
     })

@@ -8,18 +8,25 @@ import type {
   ConfigAccount
 } from '../types'
 
-export interface BaseProviderOptions {
+export interface ProviderMeta {
   id: ProviderId
   name: string
+  login: {
+    type: 'oauth' | 'apiKey'
+    helpUrl?: string
+    apiKeyPrefix?: string
+  }
+}
+
+export interface BaseProviderOptions extends ProviderMeta {
+  authenticate?: () => Promise<string>
   fetchUsage: (credential: string) => Promise<UsageItem[]>
-  authenticate: () => Promise<string>
 }
 
 export interface UseBaseProviderReturn {
-  id: ProviderId
-  name: string
+  meta: ProviderMeta
   accounts: ComputedRef<ViewAccount[]>
-  login: () => Promise<void>
+  login: (credential?: string) => Promise<void>
   logout: (accountIndex: number) => void
   refresh: (accountIndex?: number) => Promise<void>
   rename: (accountIndex: number, name: string) => void
@@ -38,8 +45,7 @@ export function useBaseProvider(
       ) as DeepReadonly<ConfigAccount[]>
     },
     set(value: ConfigAccount[]) {
-      const current =
-        (config.get('providers') as Record<string, unknown>) ?? {}
+      const current = (config.get('providers') as Record<string, unknown>) ?? {}
       const updated = { ...current }
       if (value.length > 0) {
         updated[options.id] = [...value]
@@ -62,9 +68,10 @@ export function useBaseProvider(
     }))
   })
 
-  const login = async () => {
-    const credential = await options.authenticate()
-    accountsConfig.value = [...accountsConfig.value, { credential }]
+  const login = async (credential?: string) => {
+    const resolved = credential ?? (await options.authenticate?.())
+    if (!resolved) throw new Error('Authentication cancelled')
+    accountsConfig.value = [...accountsConfig.value, { credential: resolved }]
     refresh(accountsConfig.value.length - 1)
   }
 
@@ -100,13 +107,11 @@ export function useBaseProvider(
     )
   }
 
-  return {
+  const meta: ProviderMeta = {
     id: options.id,
     name: options.name,
-    accounts,
-    login,
-    logout,
-    refresh,
-    rename
+    login: options.login
   }
+
+  return { meta, accounts, login, logout, refresh, rename }
 }

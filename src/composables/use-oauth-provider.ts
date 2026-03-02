@@ -9,6 +9,7 @@ export interface OAuthProviderOptions {
   name: string
   port?: number
   path?: string
+  helpUrl?: string
   fetchUsage: (credential: string) => Promise<UsageItem[]>
   getAuthUrl: (state: string, pkce: PkceChallenge) => string
   exchangeCode: (code: string, verifier: string) => Promise<string>
@@ -78,6 +79,7 @@ export function useOAuthProvider(options: OAuthProviderOptions) {
     id: options.id,
     name: options.name,
     fetchUsage: options.fetchUsage,
-    authenticate
+    authenticate,
+    login: { type: 'oauth', helpUrl: options.helpUrl }
   })
 }
