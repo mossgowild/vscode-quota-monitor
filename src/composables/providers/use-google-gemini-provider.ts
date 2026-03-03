@@ -3,39 +3,40 @@ import { defineService } from 'reactive-vscode'
 import { useGoogleProvider } from '../use-google-provider'
 import type { UsageItem } from '../../types'
 
-interface GeminiCredential {
-  accessToken?: string
-  refreshToken?: string
-  expiresIn?: number
-  tokenType?: string
-}
+const CLIENT_ID =
+  '681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com'
+const CLIENT_SECRET = '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'
 
 export const useGoogleGeminiProvider = defineService(() =>
   useGoogleProvider({
     id: 'googleGemini',
     name: 'Google Gemini',
-    clientId:
-      '681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com',
-    clientSecret: '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',
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
     scopes: [
       'https://www.googleapis.com/auth/cloud-platform',
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/userinfo.profile'
     ],
     fetchUsage: async (credential: string): Promise<UsageItem[]> => {
-      let credentialData: GeminiCredential
-      try {
-        credentialData = JSON.parse(credential) as GeminiCredential
-      } catch {
-        throw new Error('Invalid credential format')
+      // credential is refresh_token stored during OAuth flow
+      const tokensResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: CLIENT_ID,
+          client_secret: CLIENT_SECRET,
+          grant_type: 'refresh_token',
+          refresh_token: credential,
+        }),
+      })
+
+      if (!tokensResponse.ok) {
+        throw new Error(`Token refresh failed: ${tokensResponse.statusText}`)
       }
 
-      const accessToken = credentialData.accessToken || ''
-      const refreshToken = credentialData.refreshToken
-
-      if (!accessToken && !refreshToken) {
-        throw new Error('No access token or refresh token available')
-      }
+      const tokens = (await tokensResponse.json()) as { access_token: string }
+      const accessToken = tokens.access_token
 
       const makeRequest = async <T>(url: string, body: object): Promise<T> => {
         const response = await fetch(url, {
