@@ -4,7 +4,7 @@ import { useView } from './composables/use-view'
 import { useProviders } from './composables/use-providers'
 import { useMenu } from './composables/use-menu'
 
-const logger = defineLogger('Unify Quota Monitor')
+const logger = defineLogger('Quota Monitor')
 
 export = defineExtension(() => {
   logger.info('Extension Activated')
@@ -13,9 +13,9 @@ export = defineExtension(() => {
   const { show } = useMenu()
   useView()
 
-  useCommand('unifyQuotaMonitor.focus', () => commands.executeCommand('unifyQuotaMonitor.usageView.focus'))
-  useCommand('unifyQuotaMonitor.settings', () => show())
-  useCommand('unifyQuotaMonitor.refresh', () => refresh())
+  useCommand('quotaMonitor.focus', () => commands.executeCommand('quotaMonitor.usageView.focus'))
+  useCommand('quotaMonitor.settings', () => show())
+  useCommand('quotaMonitor.refresh', () => refresh())
 
   refresh()
 

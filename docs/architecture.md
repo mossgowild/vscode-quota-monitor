@@ -2,7 +2,7 @@
 
 ## Overview
 
-Unify Quota Monitor uses **Reactive MVC** with **Unidirectional Data Flow**, built on the `reactive-vscode` framework.
+Quota Monitor uses **Reactive MVC** with **Unidirectional Data Flow**, built on the `reactive-vscode` framework.
 
 ## Supported Providers
 
@@ -117,8 +117,8 @@ const { refresh } = useProviders()    // 1. Sets up providers + auto-refresh
 const { show } = useMenu()            // 2. Menu uses providerById internally
 useView()                             // 3. Registers webview, reads providerById
 
-useCommand('unifyQuotaMonitor.settings', () => show())
-useCommand('unifyQuotaMonitor.refresh', () => refresh())
+useCommand('quotaMonitor.settings', () => show())
+useCommand('quotaMonitor.refresh', () => refresh())
 refresh()                             // 4. Initial data load
 ```
 

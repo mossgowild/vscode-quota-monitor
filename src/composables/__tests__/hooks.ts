@@ -5,7 +5,7 @@ import { defineExtension } from 'reactive-vscode'
 import { ConfigurationTarget, ExtensionMode, Uri, workspace } from 'vscode'
 
 /* eslint-disable @typescript-eslint/naming-convention */
-const CONFIG_SECTION = 'unifyQuotaMonitor'
+const CONFIG_SECTION = 'quotaMonitor'
 
 /**
  * Activates the extension context for reactive-vscode.

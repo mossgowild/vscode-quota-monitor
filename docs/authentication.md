@@ -130,7 +130,7 @@ All credentials stored in VS Code global settings:
 
 ```json
 {
-  "unifyQuotaMonitor.providers": {
+  "quotaMonitor.providers": {
     "zhipu": [{ "credential": "sk.xxx", "name": "Work" }],
     "googleAntigravity": [{ "credential": "1//..." }],
     "claudeCode": [{ "credential": "sk-ant-oat01-..." }],

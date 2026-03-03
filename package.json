@@ -1,7 +1,7 @@
 {
   "publisher": "mossgowild",
-  "name": "unify-quota-monitor",
-  "displayName": "Unify Quota Monitor",
+  "name": "quota-monitor",
+  "displayName": "Quota Monitor",
   "description": "Monitor provider usage quotas in a beautiful panel view. Supports Google Antigravity, GitHub Copilot, Gemini CLI, Zhipu AI, Z.AI, and Kimi Code.",
   "type": "module",
   "version": "0.0.1",
@@ -9,12 +9,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mossgowild/vscode-unify-quota-monitor.git"
+    "url": "https://github.com/mossgowild/vscode-quota-monitor.git"
   },
   "bugs": {
-    "url": "https://github.com/mossgowild/vscode-unify-quota-monitor/issues"
+    "url": "https://github.com/mossgowild/vscode-quota-monitor/issues"
   },
-  "homepage": "https://github.com/mossgowild/vscode-unify-quota-monitor#readme",
+  "homepage": "https://github.com/mossgowild/vscode-quota-monitor#readme",
   "categories": [
     "Other"
   ],
@@ -27,9 +27,9 @@
   ],
   "contributes": {
     "configuration": {
-      "title": "Unify Quota Monitor",
+      "title": "Quota Monitor",
       "properties": {
-        "unifyQuotaMonitor.providers": {
+        "quotaMonitor.providers": {
           "type": "object",
           "default": {},
           "markdownDescription": "Configured provider accounts. Use the **Manage Accounts** command to add, edit, or remove accounts interactively.",
@@ -84,12 +84,12 @@
             ]
           }
         },
-        "unifyQuotaMonitor.autoRefreshEnabled": {
+        "quotaMonitor.autoRefreshEnabled": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "Automatically refresh quota data at the specified interval"
         },
-        "unifyQuotaMonitor.autoRefreshIntervalMs": {
+        "quotaMonitor.autoRefreshIntervalMs": {
           "type": "number",
           "default": 180000,
           "markdownDescription": "Refresh interval in milliseconds. Default: 180000 (3 minutes). Minimum recommended: 60000 (1 minute)"
@@ -98,17 +98,17 @@
     },
     "commands": [
       {
-        "command": "unifyQuotaMonitor.focus",
+        "command": "quotaMonitor.focus",
         "title": "Show Quota Monitor",
         "category": "Quota Monitor"
       },
       {
-        "command": "unifyQuotaMonitor.refresh",
+        "command": "quotaMonitor.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
-        "command": "unifyQuotaMonitor.settings",
+        "command": "quotaMonitor.settings",
         "title": "Settings",
         "icon": "$(gear)"
       }
@@ -116,17 +116,17 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "unifyQuotaMonitor-sidebar",
+          "id": "quotaMonitor-sidebar",
           "title": "Quota",
           "icon": "images/icon.svg"
         }
       ]
     },
     "views": {
-      "unifyQuotaMonitor-sidebar": [
+      "quotaMonitor-sidebar": [
         {
           "type": "webview",
-          "id": "unifyQuotaMonitor.usageView",
+          "id": "quotaMonitor.usageView",
           "name": "Quota",
           "icon": "images/icon.svg",
           "contextualTitle": "Quota"
@@ -136,13 +136,13 @@
     "menus": {
       "view/title": [
         {
-          "command": "unifyQuotaMonitor.refresh",
-          "when": "view == unifyQuotaMonitor.usageView",
+          "command": "quotaMonitor.refresh",
+          "when": "view == quotaMonitor.usageView",
           "group": "navigation@1"
         },
         {
-          "command": "unifyQuotaMonitor.settings",
-          "when": "view == unifyQuotaMonitor.usageView",
+          "command": "quotaMonitor.settings",
+          "when": "view == quotaMonitor.usageView",
           "group": "navigation@2"
         }
       ]

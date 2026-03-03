@@ -57,7 +57,7 @@ export const useClaudeCodeProvider = defineService(() =>
       // Anthropic API: GET /v1/usage — verify exact endpoint against live API
       const response = await fetch('https://api.anthropic.com/v1/usage', {
         headers: {
-          'User-Agent': 'UnifyQuotaMonitor/1.0',
+          'User-Agent': 'QuotaMonitor/1.0',
           Authorization: `Bearer ${token}`,
           'anthropic-version': '2023-06-01',
           Accept: 'application/json'

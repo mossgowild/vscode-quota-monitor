@@ -17,7 +17,7 @@ export function useBigModelProvider(options: BigModelProviderOptions) {
     fetchUsage: async (apiKey): Promise<UsageItem[]> => {
       const response = await fetch(options.apiUrl, {
         headers: {
-          'User-Agent': 'UnifyQuotaMonitor/1.0',
+          'User-Agent': 'QuotaMonitor/1.0',
           Authorization: apiKey
         }
       })

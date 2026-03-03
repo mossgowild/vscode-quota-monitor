@@ -11,7 +11,7 @@ export const useKimiCodeProvider = defineService(() =>
     fetchUsage: async (apiKey): Promise<UsageItem[]> => {
       const response = await fetch('https://api.kimi.com/coding/v1/usages', {
         headers: {
-          'User-Agent': 'UnifyQuotaMonitor/1.0',
+          'User-Agent': 'QuotaMonitor/1.0',
           Authorization: `Bearer ${apiKey}`
         }
       })

@@ -19,7 +19,7 @@ Configuration management using `defineConfig` from reactive-vscode.
 
 ```typescript
 export function useConfig() {
-  return defineConfig<Config>('unifyQuotaMonitor')
+  return defineConfig<Config>('quotaMonitor')
 }
 ```
 
@@ -157,7 +157,7 @@ export function useView() {
     // Generate HTML from providerById
   })
   
-  useWebviewView('unifyQuotaMonitor.usageView', html, {
+  useWebviewView('quotaMonitor.usageView', html, {
     webviewOptions: { enableScripts: true }
   })
 }

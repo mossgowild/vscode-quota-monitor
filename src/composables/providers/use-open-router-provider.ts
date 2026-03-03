@@ -11,7 +11,7 @@ export const useOpenRouterProvider = defineService(() =>
     fetchUsage: async (apiKey): Promise<BalanceUsage[]> => {
       const response = await fetch('https://openrouter.ai/api/v1/auth/key', {
         headers: {
-          'User-Agent': 'UnifyQuotaMonitor/1.0',
+          'User-Agent': 'QuotaMonitor/1.0',
           Authorization: `Bearer ${apiKey}`,
           Accept: 'application/json',
         },

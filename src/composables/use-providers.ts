@@ -55,7 +55,7 @@ export const useProviders = defineService((): UseProvidersReturn => {
   const refresh = async (providerId?: ProviderId, accountIndex?: number) => {
     await window.withProgress(
       {
-        location: { viewId: 'unifyQuotaMonitor.usageView' }
+        location: { viewId: 'quotaMonitor.usageView' }
       },
       async () => {
         if (providerId === undefined) {

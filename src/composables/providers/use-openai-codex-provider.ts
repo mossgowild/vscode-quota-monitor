@@ -64,7 +64,7 @@ export const useOpenaiCodexProvider = defineService(() =>
         try {
           const response = await fetch(endpoint, {
             headers: {
-              'User-Agent': 'UnifyQuotaMonitor/1.0',
+              'User-Agent': 'QuotaMonitor/1.0',
               Authorization: `Bearer ${token}`,
               Accept: 'application/json'
             }

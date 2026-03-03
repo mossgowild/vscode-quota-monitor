@@ -1,4 +1,4 @@
-# Unify Quota Monitor
+# Quota Monitor
 
 VS Code extension using `reactive-vscode` to display real-time AI provider usage quotas in a sidebar panel.
 
@@ -16,8 +16,8 @@ F5                   # Start debugging
 
 | ID | Title | Description |
 |---|---|---|
-| `unifyQuotaMonitor.refresh` | Refresh all quota data |
-| `unifyQuotaMonitor.settings` | Open account menu |
+| `quotaMonitor.refresh` | Refresh all quota data |
+| `quotaMonitor.settings` | Open account menu |
 
 ## Documentation
 

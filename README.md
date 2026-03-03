@@ -1,10 +1,10 @@
-# Unify Quota Monitor
+# Quota Monitor
 
 > Monitor all your AI provider quotas in one VS Code sidebar panel
 
 ![Preview](images/image.png)
 
-Tired of switching between browser tabs to check how much quota you have left? Unify Quota Monitor brings every provider into a single panel that lives right inside your editor — no extra windows, no interruptions.
+Tired of switching between browser tabs to check how much quota you have left? Quota Monitor brings every provider into a single panel that lives right inside your editor — no extra windows, no interruptions.
 
 ## Feels right at home in VS Code
 
@@ -71,7 +71,7 @@ Click the gear icon, select any account, then choose:
 
 ## Configuration
 
-Search `Unify Quota Monitor` in VS Code Settings to adjust:
+Search `Quota Monitor` in VS Code Settings to adjust:
 
 | Setting | Description | Default |
 |---------|-------------|---------|

@@ -291,7 +291,7 @@ export function useView() {
     }
   }
 
-  useWebviewView('unifyQuotaMonitor.usageView', html, {
+  useWebviewView('quotaMonitor.usageView', html, {
     webviewOptions: { enableScripts: true }
   })
 }

@@ -13,7 +13,7 @@ export const useMoonshotProvider = defineService(() =>
         'https://api.moonshot.cn/v1/users/me/balance',
         {
           headers: {
-            'User-Agent': 'UnifyQuotaMonitor/1.0',
+            'User-Agent': 'QuotaMonitor/1.0',
             Authorization: `Bearer ${apiKey}`,
             Accept: 'application/json'
           }

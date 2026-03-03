@@ -10,7 +10,7 @@ export const useSiliconFlowProvider = defineService(() =>
     fetchUsage: async (apiKey): Promise<BalanceUsage[]> => {
       const response = await fetch('https://api.siliconflow.cn/v1/user/info', {
         headers: {
-          'User-Agent': 'UnifyQuotaMonitor/1.0',
+          'User-Agent': 'QuotaMonitor/1.0',
           Authorization: `Bearer ${apiKey}`,
           Accept: 'application/json',
         },
