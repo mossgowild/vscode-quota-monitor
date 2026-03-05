@@ -197,8 +197,8 @@ export const useMenu = defineService(() => {
           const displayName = account.name ?? account.fallbackName
           const confirmed = await window.showWarningMessage(
             `Logout from ${providerName} - ${displayName}?`,
-            'Confirm',
-            'Cancel'
+            { modal: true },
+            'Confirm'
           )
           if (confirmed === 'Confirm') {
             providerById[providerId].logout(accountIndex)
