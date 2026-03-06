@@ -24,6 +24,7 @@ F5                   # Start debugging
 | Topic | File | Audience |
 |---|---|---|
 | User-facing description | [README.md](./README.md) | End users / Marketplace |
+| Coding Guidelines | [docs/coding-guidelines.md](./docs/coding-guidelines.md) | Developers |
 | Architecture | [docs/architecture.md](./docs/architecture.md) | Developers |
 | Composables | [docs/composables.md](./docs/composables.md) | Developers |
 | Providers | [docs/providers.md](./docs/providers.md) | Developers |
