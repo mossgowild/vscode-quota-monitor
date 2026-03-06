@@ -1,5 +1,10 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { defineService, watch } from 'reactive-vscode'
+import {
+  computed,
+  defineService,
+  useWindowFocused,
+  watch
+} from 'reactive-vscode'
+import { useIntervalFn } from '@reactive-vscode/vueuse'
 import { window } from 'vscode'
 import { useZhipuProvider } from './providers/use-zhipu-provider'
 import { useZaiProvider } from './providers/use-zai-provider'
@@ -23,6 +28,7 @@ export interface UseProvidersReturn {
 }
 
 export const useProviders = defineService((): UseProvidersReturn => {
+  const config = useConfig()
   const providerById: Record<ProviderId, UseBaseProviderReturn> = {
     zhipu: useZhipuProvider(),
     zai: useZaiProvider(),
@@ -37,20 +43,6 @@ export const useProviders = defineService((): UseProvidersReturn => {
     claudeCode: useClaudeCodeProvider(),
     openaiCodex: useOpenaiCodexProvider()
   }
-
-  const config = useConfig()
-  let timer: ReturnType<typeof setInterval> | null = null
-
-  watch(
-    [() => config.autoRefreshEnabled, () => config.autoRefreshIntervalMs],
-    ([enabled, intervalMs]) => {
-      if (timer) clearInterval(timer)
-      if (enabled) {
-        timer = setInterval(() => refresh(), intervalMs)
-      }
-    },
-    { immediate: true }
-  )
 
   const refresh = async (providerId?: ProviderId, accountIndex?: number) => {
     await window.withProgress(
@@ -70,6 +62,23 @@ export const useProviders = defineService((): UseProvidersReturn => {
       }
     )
   }
+
+  const isWindowFocused = useWindowFocused()
+  const shouldAutoRefresh = computed(
+    () => config.autoRefreshEnabled && isWindowFocused.value
+  )
+  const { pause, resume } = useIntervalFn(
+    refresh,
+    () => config.autoRefreshIntervalMs,
+    { immediate: true, immediateCallback: true }
+  )
+  watch(
+    shouldAutoRefresh,
+    (active) => {
+      active ? resume() : pause()
+    },
+    { immediate: true }
+  )
 
   return { providerById, refresh }
 })

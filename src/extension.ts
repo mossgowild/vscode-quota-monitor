@@ -13,11 +13,11 @@ export = defineExtension(() => {
   const { show } = useMenu()
   useView()
 
-  useCommand('quotaMonitor.focus', () => commands.executeCommand('quotaMonitor.usageView.focus'))
+  useCommand('quotaMonitor.focus', () =>
+    commands.executeCommand('quotaMonitor.usageView.focus')
+  )
   useCommand('quotaMonitor.settings', () => show())
   useCommand('quotaMonitor.refresh', () => refresh())
-
-  refresh()
 
   return () => {
     logger.info('Extension Deactivated')

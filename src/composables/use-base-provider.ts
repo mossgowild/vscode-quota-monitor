@@ -1,9 +1,9 @@
 import {
   computed,
   ref,
-  watch,
   type ComputedRef
 } from 'reactive-vscode'
+import { watchArray } from '@reactive-vscode/vueuse'
 import { ConfigurationTarget } from 'vscode'
 import { useConfig } from './use-config'
 import type {
@@ -84,9 +84,10 @@ export function useBaseProvider(
     }))
   })
 
-  watch(accountsConfig, (newVal: ConfigAccount[]) => {
-    newVal.forEach((_: ConfigAccount, index: number) => {
-      refresh(index)
+  watchArray(accountsConfig, (_newVal, _oldVal, added: ConfigAccount[]) => {
+    added.forEach((item) => {
+      const idx = accountsConfig.value.indexOf(item)
+      if (idx !== -1) refresh(idx)
     })
   })
 
