@@ -85,13 +85,46 @@ export const useGithubCopilotProvider = defineService(() =>
       ]
     },
     authenticate: async (): Promise<string> => {
-      const { authentication } = await import('vscode')
+      const { authentication, window } = await import('vscode')
+      const accounts = await authentication.getAccounts('github')
+
+      if (accounts.length > 1) {
+        const ADD_NEW = 'Add new GitHub account'
+        const items = [
+          ...accounts.map(a => ({
+            label: a.label,
+            description: a.id,
+            accountInfo: a as typeof accounts[number] | undefined,
+          })),
+          { label: ADD_NEW, description: '', accountInfo: undefined },
+        ]
+
+        const picked = await window.showQuickPick(items, {
+          title: 'GitHub Copilot',
+          placeHolder: 'Select a GitHub account to use',
+        })
+        if (!picked) throw new Error('Authentication cancelled')
+
+        if (picked.accountInfo) {
+          const session = await authentication.getSession('github', ['read:user'], {
+            account: picked.accountInfo,
+            createIfNone: true,
+          })
+          if (!session) throw new Error('GitHub authentication failed')
+          return session.accessToken
+        }
+
+        const newSession = await authentication.getSession('github', ['read:user'], {
+          forceNewSession: true,
+        })
+        if (!newSession) throw new Error('GitHub authentication failed')
+        return newSession.accessToken
+      }
+
       const session = await authentication.getSession('github', ['read:user'], {
         createIfNone: true,
       })
-      if (!session) {
-        throw new Error('GitHub authentication failed')
-      }
+      if (!session) throw new Error('GitHub authentication failed')
       return session.accessToken
     },
   })
