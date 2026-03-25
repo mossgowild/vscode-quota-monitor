@@ -6,7 +6,7 @@ export default defineConfig({
     target: 'node22',
     lib: {
       entry: 'src/extension.ts',
-      fileName: () => 'extension.cjs',
+      fileName: () => 'extension.js',
       formats: ['cjs'],
     },
     rollupOptions: {

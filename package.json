@@ -3,7 +3,6 @@
   "name": "quota-monitor",
   "displayName": "Quota Monitor",
   "description": "Monitor provider usage quotas in a beautiful panel view. Supports Google Antigravity, GitHub Copilot, Gemini CLI, Zhipu AI, Z.AI, and Kimi Code.",
-  "type": "module",
   "version": "0.0.1",
   "private": true,
   "license": "MIT",
@@ -18,7 +17,7 @@
   "categories": [
     "Other"
   ],
-  "main": "./dist/extension.cjs",
+  "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.99.0"
   },
