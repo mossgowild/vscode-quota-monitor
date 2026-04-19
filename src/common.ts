@@ -1,4 +1,4 @@
-import { AmountUsage, BalanceUsage, PercentageUsage, UsageItem } from './types'
+import { AmountUsage, BalanceUsage, IncludedUsage, PercentageUsage, UsageItem } from './types'
 
 export const PROVIDER_IDS = [
   'zhipu',
@@ -17,6 +17,10 @@ export const PROVIDER_IDS = [
 
 export function isPercentageUsage(u: UsageItem): u is PercentageUsage {
   return 'percentage' in u
+}
+
+export function isIncludedUsage(u: UsageItem): u is IncludedUsage {
+  return 'included' in u
 }
 
 export function isAmountUsage(u: UsageItem): u is AmountUsage {

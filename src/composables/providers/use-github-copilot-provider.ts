@@ -3,6 +3,165 @@ import { defineService } from 'reactive-vscode'
 import { useBaseProvider } from '../use-base-provider'
 import type { UsageItem } from '../../types'
 
+interface GithubCopilotQuotaSnapshot {
+  entitlement?: number
+  overage_permitted?: boolean
+  percent_remaining?: number
+  remaining?: number
+  unlimited?: boolean
+}
+
+interface GithubCopilotUsageData {
+  limited_user_reset_date?: string
+  limited_user_quotas?: {
+    chat?: number
+    completions?: number
+  }
+  monthly_quotas?: {
+    chat?: number
+    completions?: number
+  }
+  quota_reset_date?: string
+  quota_reset_date_utc?: string
+  quota_snapshots?: {
+    chat?: GithubCopilotQuotaSnapshot
+    completions?: GithubCopilotQuotaSnapshot
+    premium_interactions?: GithubCopilotQuotaSnapshot
+  }
+}
+
+interface GithubCopilotUsageResponse extends GithubCopilotUsageData {
+  user_copilot?: GithubCopilotUsageData
+}
+
+function clampPercentage(percentage: number): number {
+  return Math.min(100, Math.max(0, Math.round(percentage * 10) / 10))
+}
+
+function buildUsageDetail(total: number, remaining: number): { used: number, total: number } {
+  return {
+    used: Math.max(0, total - remaining),
+    total,
+  }
+}
+
+function hasQuotaData(data: GithubCopilotUsageData | undefined): data is GithubCopilotUsageData {
+  return Boolean(
+    data?.quota_snapshots
+    || data?.monthly_quotas
+    || data?.limited_user_quotas
+  )
+}
+
+function getPremiumRequestsLabel(snapshot: GithubCopilotQuotaSnapshot): string {
+  return snapshot.overage_permitted && !snapshot.unlimited
+    ? 'Included premium requests'
+    : 'Premium requests'
+}
+
+function toUsageItem(
+  name: string,
+  snapshot: GithubCopilotQuotaSnapshot | undefined,
+  resetTime?: string
+): UsageItem | undefined {
+  if (!snapshot)
+    return undefined
+
+  if (snapshot.unlimited)
+    return { name, included: true, resetTime }
+
+  if (typeof snapshot.percent_remaining === 'number') {
+    const entitlement = snapshot.entitlement ?? 0
+    const remaining = snapshot.remaining ?? 0
+    return {
+      name,
+      percentage: clampPercentage(100 - snapshot.percent_remaining),
+      detail: entitlement > 0 ? buildUsageDetail(entitlement, remaining) : undefined,
+      resetTime,
+    }
+  }
+
+  const entitlement = snapshot.entitlement ?? 0
+  if (entitlement <= 0)
+    return undefined
+
+  const remaining = snapshot.remaining ?? 0
+  return {
+    name,
+    percentage: clampPercentage(((entitlement - remaining) / entitlement) * 100),
+    detail: buildUsageDetail(entitlement, remaining),
+    resetTime,
+  }
+}
+
+function toLegacyUsageItem(
+  name: string,
+  total: number | undefined,
+  remaining: number | undefined,
+  resetTime?: string
+): UsageItem | undefined {
+  if (typeof total !== 'number' || total <= 0 || typeof remaining !== 'number')
+    return undefined
+
+  return {
+    name,
+    percentage: clampPercentage(((total - remaining) / total) * 100),
+    detail: buildUsageDetail(total, remaining),
+    resetTime,
+  }
+}
+
+export function parseGithubCopilotUsage(data: GithubCopilotUsageResponse): UsageItem[] {
+  const usageData = hasQuotaData(data.user_copilot) ? data.user_copilot : data
+  const resetTime =
+    usageData.quota_reset_date_utc
+    ?? usageData.quota_reset_date
+    ?? usageData.limited_user_reset_date
+  const quotaSnapshots = usageData.quota_snapshots
+  const usageByName = new Map<string, UsageItem>()
+
+  const legacyCompletions = toLegacyUsageItem(
+    'Inline Suggestions',
+    usageData.monthly_quotas?.completions,
+    usageData.limited_user_quotas?.completions,
+    resetTime,
+  )
+  if (legacyCompletions)
+    usageByName.set(legacyCompletions.name, legacyCompletions)
+
+  const legacyChat = toLegacyUsageItem(
+    'Chat messages',
+    usageData.monthly_quotas?.chat,
+    usageData.limited_user_quotas?.chat,
+    resetTime,
+  )
+  if (legacyChat)
+    usageByName.set(legacyChat.name, legacyChat)
+
+  const modernCompletions = toUsageItem('Inline Suggestions', quotaSnapshots?.completions, resetTime)
+  if (modernCompletions)
+    usageByName.set(modernCompletions.name, modernCompletions)
+
+  const modernChat = toUsageItem('Chat messages', quotaSnapshots?.chat, resetTime)
+  if (modernChat)
+    usageByName.set(modernChat.name, modernChat)
+
+  const premiumRequests = toUsageItem(
+    getPremiumRequestsLabel(quotaSnapshots?.premium_interactions ?? {}),
+    quotaSnapshots?.premium_interactions,
+    resetTime,
+  )
+  if (premiumRequests)
+    usageByName.set(premiumRequests.name, premiumRequests)
+
+  return [
+    usageByName.get('Inline Suggestions'),
+    usageByName.get('Chat messages'),
+    usageByName.get('Premium requests'),
+    usageByName.get('Included premium requests'),
+  ].filter((item): item is UsageItem => Boolean(item))
+}
+
 export const useGithubCopilotProvider = defineService(() =>
   useBaseProvider({
     id: 'githubCopilot',
@@ -34,55 +193,14 @@ export const useGithubCopilotProvider = defineService(() =>
         throw new Error(`Failed to fetch usage: ${response.statusText}`)
       }
 
-      const data = await response.json() as {
-        quota_snapshots?: {
-          premium_interactions?: {
-            entitlement?: number
-            limit?: number
-            remaining?: number
-            reset_date?: string
-            next_reset_date?: string
-          }
-        }
-        premium_interactions?: {
-          entitlement?: number
-          limit?: number
-          remaining?: number
-          reset_date?: string
-          next_reset_date?: string
-        }
-        user_copilot?: {
-          premium_interactions?: {
-            entitlement?: number
-            limit?: number
-            remaining?: number
-            reset_date?: string
-            next_reset_date?: string
-          }
-        }
-      }
+      const data = await response.json() as GithubCopilotUsageResponse
+      const usage = parseGithubCopilotUsage(data)
 
-      const interactions =
-        data.quota_snapshots?.premium_interactions ||
-        data.premium_interactions ||
-        data.user_copilot?.premium_interactions
-
-      if (!interactions) {
+      if (usage.length === 0) {
         throw new Error('No usage data available')
       }
 
-      const limit = interactions.entitlement || interactions.limit || 0
-      const remaining = interactions.remaining || 0
-      const used = limit - remaining
-
-      return [
-        {
-          name: 'Premium Request',
-          used,
-          total: limit,
-          resetTime: interactions.reset_date || interactions.next_reset_date,
-        },
-      ]
+      return usage
     },
     authenticate: async (): Promise<string> => {
       const { authentication, window } = await import('vscode')

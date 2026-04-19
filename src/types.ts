@@ -18,6 +18,16 @@ export interface Config {
 export interface PercentageUsage {
   name: string
   percentage: number
+  detail?: {
+    used: number
+    total: number
+  }
+  resetTime?: string
+}
+
+export interface IncludedUsage {
+  name: string
+  included: true
   resetTime?: string
 }
 
@@ -34,7 +44,7 @@ export interface BalanceUsage {
   unit?: string
 }
 
-export type UsageItem = PercentageUsage | AmountUsage | BalanceUsage
+export type UsageItem = PercentageUsage | IncludedUsage | AmountUsage | BalanceUsage
 
 export interface ViewAccount {
   name?: string
