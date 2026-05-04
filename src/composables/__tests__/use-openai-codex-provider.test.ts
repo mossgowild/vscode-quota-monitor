@@ -87,14 +87,14 @@ describe('use-openai-codex-provider', () => {
 
     assert.deepEqual(usage, [
       {
-        name: '5-hour Limit',
+        name: '5 Hour Limit',
         percentage: 3,
-        resetTime: '2026-05-04T18:04:02.000Z',
+        resetTime: '2026-05-05T02:04:02.000Z',
       },
       {
         name: 'Weekly Limit',
         percentage: 56,
-        resetTime: '2026-05-08T06:28:58.000Z',
+        resetTime: '2026-05-08T14:28:58.000Z',
       },
     ])
   })

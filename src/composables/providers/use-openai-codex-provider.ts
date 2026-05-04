@@ -93,7 +93,7 @@ function formatLimitWindowName(
     window.limit_window_seconds > 0 &&
     window.limit_window_seconds % 3600 === 0
   ) {
-    return `${window.limit_window_seconds / 3600}-hour Limit`
+    return `${window.limit_window_seconds / 3600} Hour Limit`
   }
   return fallback
 }

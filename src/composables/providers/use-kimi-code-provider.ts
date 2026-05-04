@@ -43,7 +43,7 @@ export const useKimiCodeProvider = defineService(() =>
           const used = Number(limit.detail.used) || 0
           const total = Number(limit.detail.limit) || 0
           items.push({
-            name: 'Rate Limit',
+            name: '5 Hour Limit',
             percentage: total > 0 ? Math.round((used / total) * 100) : 0,
             resetTime: limit.detail.resetTime || undefined
           })
@@ -54,7 +54,7 @@ export const useKimiCodeProvider = defineService(() =>
         const used = Number(data.usage.used) || 0
         const total = Number(data.usage.limit) || 0
         items.push({
-          name: 'Weekly Usage',
+          name: 'Weekly Limit',
           percentage: total > 0 ? Math.round((used / total) * 100) : 0,
           resetTime: data.usage.resetTime || undefined
         })
