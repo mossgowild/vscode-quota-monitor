@@ -349,11 +349,13 @@ export const useOpenaiCodexProvider = defineService(() =>
       /* POST https://auth.openai.com/oauth/token → access_token */
     },
     fetchUsage: async (accessToken) => {
-      /* chatgpt.com/backend-api/wham/usage + /api/codex/usage → PercentageUsage[] */
+      /* chatgpt.com/backend-api/wham/usage rate_limit windows → PercentageUsage[] */
     }
   })
 )
 ```
+
+`fetchUsage` reads `rate_limit.primary_window` and `rate_limit.secondary_window`. Each window exposes `used_percent`, `limit_window_seconds`, `reset_after_seconds`, and `reset_at` as Unix epoch seconds; display labels are derived from the window duration.
 
 ## Usage Types
 

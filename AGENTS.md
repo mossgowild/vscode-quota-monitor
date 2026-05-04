@@ -7,7 +7,7 @@ VS Code extension using `reactive-vscode` to display real-time AI provider usage
 ```bash
 npm install          # Install dependencies
 npm run build        # Build extension
-npm exec tsc --noEmit # Type check
+npm exec -- tsc --noEmit # Type check
 npm run test         # Run tests in Docker
 F5                   # Start debugging
 ```

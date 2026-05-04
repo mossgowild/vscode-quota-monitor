@@ -34,11 +34,23 @@ export function useOAuthProvider(options: OAuthProviderOptions) {
 
         const code = url.searchParams.get('code')
         const returnedState = url.searchParams.get('state')
+        const error = url.searchParams.get('error')
+        const errorDescription = url.searchParams.get('error_description')
 
         if (returnedState !== state) {
           res.end('Invalid state. Please try again.')
           server.close()
           reject(new Error('Invalid state'))
+          return
+        }
+
+        if (error) {
+          const message = errorDescription
+            ? `${error}: ${errorDescription}`
+            : error
+          res.end(`Authentication failed: ${message}`)
+          server.close()
+          reject(new Error(message))
           return
         }
 
