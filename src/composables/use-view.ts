@@ -57,135 +57,132 @@ export function useView() {
             .content {
                 flex: 1;
                 overflow-y: auto;
-              padding: 0.5em 1em;
+              padding: 8px 16px 16px;
                 display: flex;
                 flex-direction: column;
             }
             .provider-section {
-              margin-top: 0;
-              margin-bottom: 0;
-              padding-bottom: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
             }
-            .provider-section + .provider-section {
-              margin-top: 10px;
-              padding-top: 10px;
-              border-top: 1px solid var(--vscode-panel-border);
+            .provider-divider {
+              padding: 12px 0;
+            }
+            .provider-divider::before {
+              content: '';
+              display: block;
+              border-top: 1px solid var(--vscode-editorWidget-border);
             }
             .provider-header {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                font-size: 12px;
+                font-size: 13px;
+                line-height: 18px;
                 font-weight: 600;
-                color: var(--vscode-descriptionForeground);
-                margin-bottom: 6px;
+                color: var(--vscode-foreground);
+            }
+            .provider-accounts {
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
             }
             .account-block {
-              margin-top: 8px;
-              margin-bottom: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
             }
-            .provider-header + .account-block {
-              margin-top: 0;
+            .account-header {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
             }
             .account-label {
-                font-size: 11px;
-                color: var(--vscode-descriptionForeground);
-                margin-bottom: 6px;
-                font-weight: 500;
+              font-size: 12px;
+              line-height: 18px;
+              color: var(--vscode-foreground);
+              font-weight: 500;
             }
             .account-error {
                 color: var(--vscode-errorForeground);
-                font-size: 0.8em;
-              margin-top: 0.4em;
+                font-size: 12px;
+                line-height: 16px;
                 word-break: break-all;
             }
             .usage-grid {
               display: flex;
               flex-direction: column;
-              gap: 0;
+              gap: 14px;
+              padding-left: 12px;
               font-size: 12px;
-              line-height: 1.4;
+              line-height: 16px;
             }
-            .usage-section-footer {
-              margin-top: 0;
-            }
-            .quota-item {
-              margin-bottom: 6px;
-            }
-            .quota-item:last-child {
-              margin-bottom: 0;
-            }
-            .quota-item-header {
-                display: flex;
-                align-items: flex-end;
-                justify-content: space-between;
-              gap: 20px;
-              margin-bottom: 3px;
-            }
-            .quota-item-label {
-                color: var(--vscode-foreground);
-            }
-            .quota-item-value {
-                color: var(--vscode-descriptionForeground);
-            }
-            .quota-item-value-group {
+            .quota-indicator {
               display: flex;
-              align-items: center;
-              justify-content: flex-end;
+              flex-direction: column;
+              gap: 6px;
+            }
+            .quota-indicator.balance,
+            .quota-indicator.included {
+              gap: 4px;
+            }
+            .quota-title {
+              font-size: 13px;
+              line-height: 18px;
+              font-weight: 600;
+              color: var(--vscode-foreground);
+            }
+            .quota-details {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+              gap: 12px;
+            }
+            .quota-percentage {
+              display: flex;
+              align-items: baseline;
+              gap: 4px;
+              min-width: 0;
+            }
+            .quota-value-group {
+              display: inline-flex;
+              align-items: baseline;
               gap: 4px;
               white-space: nowrap;
               font-variant-numeric: tabular-nums;
             }
-            .quota-item-detail-prefix {
-              display: inline-flex;
-              align-items: center;
-              gap: 4px;
+            .quota-value {
+              font-size: 20px;
+              line-height: 24px;
+              font-weight: 700;
+              color: var(--vscode-foreground);
             }
-            .quota-item-detail-text,
-            .quota-item-detail-separator {
-              font-size: 10px;
+            .quota-value-suffix {
+              font-size: 12px;
+              line-height: 16px;
               color: var(--vscode-descriptionForeground);
-              opacity: 0.82;
-              line-height: 1;
-            }
-            .quota-item-detail-separator {
-              opacity: 0.68;
-              display: inline-block;
-              transform: translateY(-0.5px);
             }
             .quota-bar {
-                box-sizing: content-box;
                 width: 100%;
                 height: 4px;
-                background-color: var(--vscode-gauge-background);
+                background-color: var(--vscode-editorWidget-border);
                 border-radius: 4px;
-                border: 1px solid var(--vscode-gauge-border);
-                margin: 4px 0;
+            }
+            .provider-accounts > .account-block:last-child .usage-grid > .quota-indicator:last-child .quota-bar {
+              margin-bottom: 4px;
             }
             .quota-bit {
                 height: 100%;
-                background-color: var(--vscode-gauge-foreground);
+                background-color: var(--vscode-focusBorder);
                 border-radius: 4px;
                 transition: width 0.3s ease;
             }
-            .quota-item.warning .quota-bar {
-                background-color: var(--vscode-gauge-warningBackground);
-            }
-            .quota-item.warning .quota-bar .quota-bit {
-                background-color: var(--vscode-gauge-warningForeground);
-            }
-            .quota-item.error .quota-bar {
-                background-color: var(--vscode-gauge-errorBackground);
-            }
-            .quota-item.error .quota-bar .quota-bit {
-                background-color: var(--vscode-gauge-errorForeground);
-            }
-            .usage-reset {
-              font-size: 11px;
+            .quota-reset {
+              font-size: 12px;
+              line-height: 16px;
                 color: var(--vscode-descriptionForeground);
-              display: flex;
-              align-items: center;
-              gap: 3px;
+              white-space: nowrap;
             }
             .empty-state {
                 flex: 1;
@@ -193,6 +190,7 @@ export function useView() {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+              gap: 8px;
                 text-align: center;
                 padding: 2em 1.5em;
                 color: var(--vscode-descriptionForeground);
@@ -201,10 +199,15 @@ export function useView() {
                 cursor: default;
             }
             .empty-state-icon {
-                margin-bottom: 8px;
                 color: var(--vscode-editor-foreground);
                 display: flex;
                 justify-content: center;
+            }
+            .empty-state-copy {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 4px;
             }
             .empty-state-icon svg {
                 width: 60px;
@@ -213,7 +216,6 @@ export function useView() {
             .empty-state-title {
                 font-size: 1.6em;
                 font-weight: 500;
-                margin-bottom: 4px;
                 color: var(--vscode-editor-foreground);
             }
             .empty-state-description {
@@ -249,7 +251,7 @@ export function useView() {
             }
             function updateTimers() {
               const now = new Date();
-              document.querySelectorAll('.usage-reset[data-reset-time]').forEach(el => {
+              document.querySelectorAll('.quota-reset[data-reset-time]').forEach(el => {
                 const targetStr = el.getAttribute('data-reset-time');
                 if (!targetStr) return;
                 const target = new Date(targetStr);
@@ -264,7 +266,7 @@ export function useView() {
                 const mins = Math.floor((diffMs % 3600000) / 60000);
                 const secs = Math.floor((diffMs % 60000) / 1000);
                 const timeStr = days > 0 ? (days + 'd ' + hours + 'h') : totalHours > 0 ? (totalHours + 'h ' + mins + 'm') : (mins + 'm ' + secs + 's');
-                el.textContent = 'Reset in ' + timeStr;
+                el.textContent = 'Resets in ' + timeStr;
               });
             }
             setInterval(updateTimers, 1000);
@@ -275,7 +277,7 @@ export function useView() {
   })
 
   function renderEmptyState(): string {
-    return `<div class="empty-state"><div class="empty-state-icon">${iconSvg}</div><div class="empty-state-title">No Active Accounts</div><div class="empty-state-description">Add an account to monitor your quota usage</div></div>`
+    return `<div class="empty-state"><div class="empty-state-icon">${iconSvg}</div><div class="empty-state-copy"><div class="empty-state-title">No Active Accounts</div><div class="empty-state-description">Add an account to monitor your quota usage</div></div></div>`
   }
 
   function createMockProviders(): ViewProvider[] {
@@ -399,61 +401,40 @@ export function useView() {
   }
 
   function renderProviders(list: ViewProvider[], locale: string): string {
-    return list
-      .filter((p) => p.accounts.length > 0)
-      .map((p) => renderProvider(p, locale))
+    const activeProviders = list.filter((p) => p.accounts.length > 0)
+    return activeProviders
+      .map((provider, index) => {
+        const divider = index === 0 ? '' : '<div class="provider-divider" aria-hidden="true"></div>'
+        return `${divider}${renderProvider(provider, locale)}`
+      })
       .join('')
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function renderProvider(provider: ViewProvider, _locale: string): string {
-    const hasMultiple = provider.accounts.length > 1
-    return `<div class="provider-section"><div class="provider-header"><span>${provider.name}</span></div>${provider.accounts.map((acc) => renderAccount(acc, hasMultiple)).join('')}</div>`
+    return `<div class="provider-section"><div class="provider-header"><span>${provider.name}</span></div><div class="provider-accounts">${provider.accounts.map((acc) => renderAccount(acc, provider.accounts.length > 1)).join('')}</div></div>`
   }
 
-  function renderAccount(account: ViewAccount, showLabel: boolean): string {
-    const sharedResetTime = getSharedResetTime(account.usage)
+  function renderAccount(account: ViewAccount, showFallbackLabel: boolean): string {
     const errorHtml = account.error
       ? `<div class="account-error">${account.error}</div>`
       : ''
-    const usageHtml = account.usage
-      .map((u) => renderUsageItem(u, Boolean(sharedResetTime)))
-      .join('')
-    const footerHtml = sharedResetTime
-      ? `<div class="usage-section-footer">${renderResetHtml(sharedResetTime)}</div>`
+    const labelHtml = showFallbackLabel
+      ? `<div class="account-label">${account.name ?? account.fallbackName}</div>`
       : ''
-    if (!showLabel)
-      return `<div class="account-block">${errorHtml}<div class="usage-grid">${usageHtml}</div>${footerHtml}</div>`
-    return `<div class="account-block"><div class="account-label">${account.name ?? account.fallbackName}</div>${errorHtml}<div class="usage-grid">${usageHtml}</div>${footerHtml}</div>`
-  }
-
-  function getUsageResetTime(usage: UsageItem): string | undefined {
-    if (
-      isPercentageUsage(usage) ||
-      isIncludedUsage(usage) ||
-      isAmountUsage(usage)
-    )
-      return usage.resetTime
-    return undefined
-  }
-
-  function getSharedResetTime(list: UsageItem[]): string | undefined {
-    const resetTimes = list
-      .map((usage) => getUsageResetTime(usage))
-      .filter((resetTime): resetTime is string => Boolean(resetTime))
-
-    if (resetTimes.length === 0) return undefined
-
-    const first = resetTimes[0]
-    return resetTimes.every((resetTime) => resetTime === first)
-      ? first
-      : undefined
+    const headerHtml = labelHtml || errorHtml
+      ? `<div class="account-header">${labelHtml}${errorHtml}</div>`
+      : ''
+    const usageHtml = account.usage
+      .map((u) => renderUsageItem(u))
+      .join('')
+    return `<div class="account-block">${headerHtml}<div class="usage-grid">${usageHtml}</div></div>`
   }
 
   function renderResetHtml(resetTime: string): string {
     const date = new Date(resetTime)
     const diffMs = date.getTime() - Date.now()
-    if (diffMs <= 0) return `<div class="usage-reset">Resetting...</div>`
+    if (diffMs <= 0) return `<span class="quota-reset">Resetting...</span>`
     const totalHours = Math.floor(diffMs / 3600000)
     const days = Math.floor(totalHours / 24)
     const hours = totalHours % 24
@@ -465,14 +446,7 @@ export function useView() {
         : totalHours > 0
           ? `${totalHours}h ${mins}m`
           : `${mins}m ${secs}s`
-    return `<div class="usage-reset" data-reset-time="${resetTime}">Reset in ${timeStr}</div>`
-  }
-
-  function getQuotaStatusClass(percent: number): string {
-    const clamped = Math.min(100, percent)
-    if (clamped >= 90) return 'error'
-    if (clamped >= 75) return 'warning'
-    return ''
+    return `<span class="quota-reset" data-reset-time="${resetTime}">Resets in ${timeStr}</span>`
   }
 
   function progressBar(percent: number): string {
@@ -480,42 +454,35 @@ export function useView() {
     return `<div class="quota-bar"><div class="quota-bit" style="width: ${clamped}%"></div></div>`
   }
 
-  function renderUsageDetailPrefix(detail?: {
-    used: number
-    total: number
-  }): string {
-    return detail
-      ? `<span class="quota-item-detail-prefix"><span class="quota-item-detail-text">${detail.used} / ${detail.total}</span><span class="quota-item-detail-separator">=</span></span>`
+  function renderQuotaDetails(
+    value: string,
+    suffix: string,
+    resetHtml: string
+  ): string {
+    const suffixHtml = suffix
+      ? `<span class="quota-value-suffix">${suffix}</span>`
       : ''
+
+    return `<div class="quota-details"><div class="quota-percentage"><span class="quota-value-group"><span class="quota-value">${value}</span>${suffixHtml}</span></div>${resetHtml}</div>`
   }
 
-  function renderUsageItem(
-    usage: UsageItem,
-    hideReset: boolean = false
-  ): string {
+  function renderUsageItem(usage: UsageItem): string {
     if (isBalanceUsage(usage)) {
       const unit = usage.unit ?? ''
       const amountStr = `${unit}${Number(usage.amount).toFixed(2)}`
-      return `<div class="quota-item"><div class="quota-item-header"><span class="quota-item-label">${usage.name}</span><span class="quota-item-value">${amountStr}</span></div></div>`
+      return `<div class="quota-indicator balance"><div class="quota-title">${usage.name}</div>${renderQuotaDetails(amountStr, '', '')}</div>`
     } else if (isIncludedUsage(usage)) {
-      const resetHtml =
-        !hideReset && usage.resetTime ? renderResetHtml(usage.resetTime) : ''
-      return `<div class="quota-item"><div class="quota-item-header"><span class="quota-item-label">${usage.name}</span><span class="quota-item-value">Included</span></div>${progressBar(0)}${resetHtml}</div>`
+      const resetHtml = usage.resetTime ? renderResetHtml(usage.resetTime) : ''
+      return `<div class="quota-indicator included"><div class="quota-title">${usage.name}</div>${renderQuotaDetails('Included', '', resetHtml)}</div>`
     } else if (isPercentageUsage(usage)) {
       const pct = Math.min(100, usage.percentage)
-      const resetHtml =
-        !hideReset && usage.resetTime ? renderResetHtml(usage.resetTime) : ''
-      const detailPrefixHtml = renderUsageDetailPrefix(usage.detail)
-      const statusClass = getQuotaStatusClass(pct)
-      return `<div class="quota-item ${statusClass}"><div class="quota-item-header"><span class="quota-item-label">${usage.name}</span><span class="quota-item-value-group">${detailPrefixHtml}<span class="quota-item-value">${pct}%</span></span></div>${progressBar(pct)}${resetHtml}</div>`
+      const resetHtml = usage.resetTime ? renderResetHtml(usage.resetTime) : ''
+      return `<div class="quota-indicator"><div class="quota-title">${usage.name}</div>${renderQuotaDetails(String(pct), '% used', resetHtml)}${progressBar(pct)}</div>`
     } else if (isAmountUsage(usage)) {
       const pct =
         usage.total > 0 ? Math.round((usage.used / usage.total) * 100) : 0
-      const displayValue = `${usage.used} / ${usage.total}`
-      const resetHtml =
-        !hideReset && usage.resetTime ? renderResetHtml(usage.resetTime) : ''
-      const statusClass = getQuotaStatusClass(pct)
-      return `<div class="quota-item ${statusClass}"><div class="quota-item-header"><span class="quota-item-label">${usage.name}</span><span class="quota-item-value">${displayValue}</span></div>${progressBar(pct)}${resetHtml}</div>`
+      const resetHtml = usage.resetTime ? renderResetHtml(usage.resetTime) : ''
+      return `<div class="quota-indicator"><div class="quota-title">${usage.name}</div>${renderQuotaDetails(String(pct), '% used', resetHtml)}${progressBar(pct)}</div>`
     } else {
       return ''
     }

@@ -11,94 +11,149 @@
 ## Progress Bar
 
 ```css
+.provider-section {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.provider-divider {
+	padding: 12px 0;
+}
+
+.provider-divider::before {
+	content: '';
+	display: block;
+	border-top: 1px solid var(--vscode-editorWidget-border);
+}
+
+.provider-accounts {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.account-block {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.account-header {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
 .usage-grid {
 	display: flex;
 	flex-direction: column;
-	gap: 0;
+	gap: 14px;
+	padding-left: 12px;
 	font-size: 12px;
-	line-height: 1.4;
+	line-height: 16px;
 }
 
-.quota-item {
-	margin-bottom: 6px;
-}
-
-.quota-item-header {
+.quota-indicator {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 20px;
-	margin-bottom: 3px;
+	flex-direction: column;
+	gap: 6px;
 }
 
-.quota-item-label {
+.quota-indicator.balance,
+.quota-indicator.included {
+	gap: 4px;
+}
+
+.quota-title {
+	font-size: 13px;
+	line-height: 18px;
+	font-weight: 600;
+}
+
+.quota-details {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.quota-percentage {
+	display: flex;
+	align-items: baseline;
+	gap: 4px;
+}
+
+
+.quota-value {
+	font-size: 20px;
+	line-height: 24px;
+	font-weight: 700;
 	color: var(--vscode-foreground);
 }
 
-.quota-item-value {
+.quota-value-suffix,
+.quota-reset {
+	font-size: 12px;
+	line-height: 16px;
 	color: var(--vscode-descriptionForeground);
 }
 
 .quota-bar {
-	box-sizing: content-box;
 	width: 100%;
 	height: 4px;
 	border-radius: 4px;
-	border: 1px solid var(--vscode-gauge-border);
-	background: var(--vscode-gauge-background);
-	margin: 4px 0;
+	background: var(--vscode-editorWidget-border);
+}
+
+.provider-accounts > .account-block:last-child .usage-grid > .quota-indicator:last-child .quota-bar {
+	margin-bottom: 4px;
 }
 
 .quota-bit {
 	height: 100%;
 	border-radius: 4px;
-	background: var(--vscode-gauge-foreground);
+	background: var(--vscode-focusBorder);
 	transition: width 0.3s ease;
-}
-
-.quota-item.warning .quota-bar {
-	background: var(--vscode-gauge-warningBackground);
-}
-
-.quota-item.warning .quota-bar .quota-bit {
-	background: var(--vscode-gauge-warningForeground);
-}
-
-.quota-item.error .quota-bar {
-	background: var(--vscode-gauge-errorBackground);
-}
-
-.quota-item.error .quota-bar .quota-bit {
-	background: var(--vscode-gauge-errorForeground);
 }
 ```
 
-Use the same DOM naming and inner selector structure as VS Code chat usage widgets: `quota-item > quota-item-header > quota-bar > quota-bit`.
+Use the same DOM naming and inner selector structure as VS Code 1.119 chat status quota rows: `quota-indicator > quota-title + quota-details + quota-bar > quota-bit`. The details row uses `quota-value-group`, `quota-value`, optional `quota-value-suffix`, and optional inline `quota-reset`.
+
+Provider sections have no vertical padding and no inter-section gap. A dedicated divider owns the full section separation with equal padding above and below the line. Providers, account blocks, usage stacks, and empty states all use flex-column gap for vertical spacing instead of layout margins. Provider names are the primary section titles. Account names render as secondary headings when the provider has multiple accounts, and the fallback label is shown when no custom account name exists.
 
 ## Layout
 
 | Element | Spacing |
 |---------|---------|
-| Content padding | `0.5em 1em` |
-| Provider section separator | `10px` top gap + `10px` top padding |
-| Provider header bottom margin | `6px` |
-| Account block margin | `8px 0 0` |
+| Content padding | `8px 16px 16px` |
+| Provider section internal gap | `8px` |
+| Provider divider | `12px` top padding + `12px` bottom padding around a 1px line |
+| Provider vertical padding | `0` |
+| Provider accounts gap | `12px` |
+| Account block gap | `8px` |
+| Account header gap | `2px` |
 | Usage items | single-column stack |
-| Quota item spacing | `6px` bottom gap |
+| Usage grid gap | `14px` |
+| Usage grid left padding | `12px` |
+| Standard quota indicator internal gap | `6px` |
+| Included / balance indicator internal gap | `4px` |
+| Final trailing quota bar bottom margin | `4px` on the last quota bar in the last account of a provider |
+| Empty state gap | `8px` |
+| Empty state copy gap | `4px` |
 
 ## Typography
 
 | Element | Size | Weight | Color |
 |---------|------|--------|-------|
-| Provider title | `12px` | 600 | `descriptionForeground` |
-| Quota labels | `12px` | inherit | `foreground` |
-| Usage values | `12px` | inherit | `descriptionForeground` |
-| Account label | `11px` | 500 | `descriptionForeground` |
-| Reset time | `11px` | normal | `descriptionForeground` |
+| Provider title | `13px` | 600 | `foreground` |
+| Quota title | `13px` | 600 | `foreground` |
+| Usage value | `20px` | 700 | `foreground` |
+| Detail / suffix | `12px` | normal | `descriptionForeground` |
+| Account label | `12px` | 500 | `foreground` |
+| Reset time | `12px` | normal | `descriptionForeground` |
 
-In the sidebar panel, override the webview's global `border-box` for `.quota-bar` and use a `4px` content height so the gauge matches Copilot's popup box model instead of rendering thinner inside the webview.
-
-When all quota rows in the same account share a reset time, render that reset once as a section footer instead of repeating it under every bar. This keeps the usage block closer to Copilot's `header + quota stack + footer note` structure.
+Use the current VS Code 1.119 quota bar tokens directly: `editorWidget-border` for the track and `focusBorder` for the fill. The row itself has no per-quota outline or inner card padding, and the reset label stays inline in the details row.
 
 ## Sorting
 
@@ -106,6 +161,8 @@ When all quota rows in the same account share a reset time, render that reset on
 - **Usage items**: Determined by each provider's `fetchUsage` implementation
 
 ## Reset Time Display
+
+Reset labels use `Resets in {time}` while time remains and `Resetting...` after expiry.
 
 | Time Remaining | Format |
 |----------------|--------|
@@ -130,9 +187,10 @@ Three display modes based on `UsageItem` type:
 
 | Type | Display | Progress Bar |
 |------|---------|--------------|
-| `PercentageUsage` | `75%` | Yes (warns at ≥75%, danger at ≥90%) |
-| `AmountUsage` | `750 / 1000` | Yes (calculated from `used/total`) |
+| `PercentageUsage` | `23.9% used` | Yes |
+| `AmountUsage` | `74% used` | Yes |
 | `BalanceUsage` | `$12.50` or `¥12.50` | No |
+| `IncludedUsage` | `Included` | No |
 
 `BalanceUsage` renders as: `${unit}${amount.toFixed(2)}` — unit prefix (e.g. `$`, `¥`) is optional.
 
@@ -141,6 +199,8 @@ Three display modes based on `UsageItem` type:
 When no accounts are configured, the webview shows a centered empty state:
 
 - Custom SVG icon (`images/icon.svg` inlined via Vite `?raw` import)
+- `empty-state` uses flex-column gap `8px`
+- `empty-state-copy` wraps title + description with flex-column gap `4px`
 - Title: "No Active Accounts"
 - Description: "Add an account to monitor your quota usage"
 
